@@ -30,3 +30,9 @@
 
 # Debug files
 *.dSYM/
+
+#generated codes
+codegentemp/
+CortexM0/
+Export/
+Generated_Source/
