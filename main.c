@@ -286,9 +286,6 @@ static void init_calibration(int enable_franklin_fb)
 	// フェライトバーアンテナのコイルに供給するために用いる
 	Pin_MixClockOut_SetDriveMode(Pin_MixClockOut_DM_STRONG);
 
-	// Clock_MIXは停止状態に
-	Clock_MIX_Stop();
-
 	// enable_franklin_fbが有効の場合は、AMux_CapSWを設定する
 	if(enable_franklin_fb)
 	{
@@ -313,11 +310,6 @@ static void uninit_calibration()
 	// Pin_MixClockOutをHigh impedance analogに変更し、出力
 	// をオフにする
 	Pin_MixClockOut_SetDriveMode(Pin_MixClockOut_DM_ALG_HIZ);
-
-
-	// Clock_MIXの再開はここでは行わない。
-	// Clock_MIXの再開には、受信周波数帯に合わせた分周値の設定が
-	// 必要であるため、別の場所でこれを行う。
 
 
 	// AMux_CapSWのうち、フランクリン発振器を有効にするためのラインを切断する
@@ -362,6 +354,7 @@ static void set_calibration_ref_clock(int band)
 static void set_calibrarion_parameters(int band, int finetune)
 {
 	// Pin_BandSelの設定
+    AMux_CapSw_Start();
 	if(band)
 	{
 		// 40kHz バンドの場合は、AMux_CapSWの0を接続する
@@ -375,6 +368,7 @@ static void set_calibrarion_parameters(int band, int finetune)
 
 	// PWM_Tuneの設定
 	PWM_Tune_Start();
+    Clock_PWMTune_Start();
 	// PWM周期はTUNE_MAXの倍の周期になっている。必ずduty非は50%以上で用いるため、TUNE_MAXを加算して用いる
 	PWM_Tune_WriteCompare(finetune + TUNE_MAX); 
 }
@@ -546,13 +540,27 @@ int main()
 	set_calibration_ref_clock(1);
 	for(;;)
 	{
-		set_calibrarion_parameters(1, 0);
+		set_calibrarion_parameters(1, 512);
 		get_adc_amplitude(); // ダミー呼び出し
-		for(uint32_t i = 0; i < 1024; i += 10)
+/*
+        for(uint32_t i = 0; i < 1024; i += 51)
 		{
 			uart_print("set ");
 			set_calibrarion_parameters(1, i);
 			uart_print("wait ");
+			for(uint32_t s = system_time; (int32_t)(system_time - s) < 3000; ) ;
+			uart_send_dec32(i);
+			uart_print(" : ");
+			uart_print("measure ");
+			uart_send_udec32(get_adc_amplitude());
+			uart_print("\r\n");
+		}
+*/
+        for(uint32_t i = 2; i < 1024; i += 51)
+		{
+			uart_print("set ");
+    		Clock_MIX_SetDividerValue(i);
+            uart_print("wait ");
 			for(uint32_t s = system_time; (int32_t)(system_time - s) < 3000; ) /**/;
 			uart_send_dec32(i);
 			uart_print(" : ");
@@ -560,7 +568,8 @@ int main()
 			uart_send_udec32(get_adc_amplitude());
 			uart_print("\r\n");
 		}
-		uart_print("\r\n");
+    
+    uart_print("\r\n");
 	}
 		
 #if 0
