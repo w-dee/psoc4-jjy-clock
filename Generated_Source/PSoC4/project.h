@@ -82,6 +82,7 @@
 #include <Pin_ADCin_Lux.h>
 #include <Pin_ADCin_Lux_aliases.h>
 #include <Clock_PWMTune.h>
+#include <Clock_Franklin.h>
 #include <ADC_IRQ.h>
 #include <ADC_intClock.h>
 #include <UART_SCBCLK.h>
