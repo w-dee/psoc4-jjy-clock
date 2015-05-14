@@ -582,6 +582,8 @@ static void tuning_start_adc()
 	ADC_StartConvert();
 }
 
+#define MEASURE_ADC_NOISE_RESISTANT
+
 static void tuning_measure_adc()
 {
 	// 値を得て振幅の最大値と最小値を得る
@@ -594,7 +596,9 @@ static void tuning_measure_adc()
 	// アルゴリズムを採用する。
 	int16_t th_l = tuning_state.adc_low;
 	int16_t th_h = tuning_state.adc_high;
-/*
+
+#ifdef MEASURE_ADC_NOISE_RESISTANT
+    
     int16_t p_th_l = th_l;
 	int16_t p_th_h = th_h;
 	th_h += (int)(p_th_l - p_th_h) >> 10;
@@ -604,10 +608,13 @@ static void tuning_measure_adc()
 		th_h += (int)(res - th_h) >> 6;
 	if(th_l > res)
 		th_l += (int)(res - th_l) >> 6;
-*/
+
+#else
+      
     if(th_l > res) th_l = res;
     if(th_h < res) th_h = res;
-
+#endif
+    
 	tuning_state.adc_low = th_l;
 	tuning_state.adc_high = th_h;
 }
@@ -702,8 +709,13 @@ static void tuning_subhandler()
 		{
 			tuning_state.start_time = system_time;
 			set_tuning_substate(TUNE_SUBSTATE_MEASURE);
-			tuning_state.adc_high = SHRT_MIN;
+#ifdef MEASURE_ADC_NOISE_RESISTANT
+            tuning_state.adc_high = 0;
+			tuning_state.adc_low = 0;
+#else
+            tuning_state.adc_high = SHRT_MIN;
 			tuning_state.adc_low = SHRT_MAX;
+#endif
 			tuning_start_adc(); // 最初のADC計測をトリガー
 uart_print("measuring tune ");
 uart_send_dec32(tuning_state.current);
