@@ -303,13 +303,6 @@ static inline int is_elapsed(uint32_t epoch, int32_t timeout)
  */
 static void init_calibration(int enable_franklin_fb)
 {
-	// Pin_MixClockOutをStrong Driveのdigital outに設定。
-	// Pin_MixClockOutはClocl_MIXの出力をT-FFで1/2分周した出力に
-	// つながっていて、普段は周波数ミキサーを駆動するために使われているが、
-	// キャリブレーション時はこれをキャリブレーションの基準周波数を
-	// フェライトバーアンテナのコイルに供給するために用いる
-	Pin_MixClockOut_SetDriveMode(Pin_MixClockOut_DM_STRONG);
-
 	// enable_franklin_fbが有効の場合は、AMux_CapSWを設定する
     AMux_CapSw_Start();
 	if(enable_franklin_fb)
@@ -355,6 +348,13 @@ static void uninit_calibration()
 */
 static void set_calibration_ref_clock(int band)
 {
+	// Pin_MixClockOutをStrong Driveのdigital outに設定。
+	// Pin_MixClockOutはClocl_MIXの出力をT-FFで1/2分周した出力に
+	// つながっていて、普段は周波数ミキサーを駆動するために使われているが、
+	// キャリブレーション時はこれをキャリブレーションの基準周波数を
+	// フェライトバーアンテナのコイルに供給するために用いる
+	Pin_MixClockOut_SetDriveMode(Pin_MixClockOut_DM_STRONG);
+
 	// Clock_MIX_SetDividerValue 関数への設定値は、所望の値の半分、つまり
 	// 倍の周波数を設定する。これは、クロック出力がT-FFで半分の周波数にされているため。回路図を参照のこと。
     Clock_MIX_Start();
@@ -904,7 +904,21 @@ int main()
 	CyIntSetSysVector(15,SysTic_Handler);//Int アドレス設定
 	SysTick_Config(CLOCK_FREQ/int_freq);//int_freqを設定 
 
-	
+#if 0
+    init_tune_adc();
+    init_calibration(1);
+    set_calibrarion_parameters(0, 1023);
+    for(;;)
+    {
+           uart_print("amp: ");
+        uart_send_dec32(get_adc_amplitude());
+/*
+        uart_print(" freq: ");
+        uart_send_dec32(get_franklin_frequency());
+*/
+        uart_print("\r\n");
+    }
+#endif
 	for(;;)
 	{
 
