@@ -290,6 +290,12 @@ static inline int is_elapsed(uint32_t epoch, int32_t timeout)
 	return get_elapsed_time(epoch) >= (int32_t)timeout;
 }
 
+#define AMux_CapSW_FRANKLIN 0 //!< Franklin_FB mux ch
+#define AMux_CapSW_BAND40K_1 1 //!< 40k band capacitor mux 1
+#define AMux_CapSW_BAND40K_2 2 //!< 40k band capacitor mux 2
+
+
+
 
 /**
  * システムを、キャリブレーションに適した設定にする
@@ -305,9 +311,10 @@ static void init_calibration(int enable_franklin_fb)
 	Pin_MixClockOut_SetDriveMode(Pin_MixClockOut_DM_STRONG);
 
 	// enable_franklin_fbが有効の場合は、AMux_CapSWを設定する
+    AMux_CapSw_Start();
 	if(enable_franklin_fb)
 	{
-		AMux_CapSw_Connect(1); // 1=Franklin_FB
+		AMux_CapSw_Connect(AMux_CapSW_FRANKLIN); // 1=Franklin_FB
 	}
 
 	// enable_franklin_fbが有効の場合は、コンパレーター LPComp_Franklinと
@@ -331,15 +338,16 @@ static void uninit_calibration()
 
 
 	// AMux_CapSWのうち、フランクリン発振器を有効にするためのラインを切断する
-	AMux_CapSw_Disconnect(1); // 1=Franklin_FB
+	AMux_CapSw_Disconnect(AMux_CapSW_FRANKLIN); // 1=Franklin_FB
 	
 	// コンパレーター LPComp_Franklinと
 	// TCPWM Timer_Franklinを停止する
 	LPComp_Franklin_Stop();
 	Timer_Franklin_Stop();
 }
+
 #define TUNE_MAX 1024
-#define TUNE_INITIAL_TUNE_STEP 5
+#define TUNE_INITIAL_TUNE_STEP 10
 
 /**
  * Pin_MixClockOut の出力周波数を設定する
@@ -349,6 +357,7 @@ static void set_calibration_ref_clock(int band)
 {
 	// Clock_MIX_SetDividerValue 関数への設定値は、所望の値の半分、つまり
 	// 倍の周波数を設定する。これは、クロック出力がT-FFで半分の周波数にされているため。回路図を参照のこと。
+    Clock_MIX_Start();
 	if(band)
 	{
 		// 40kHz
@@ -375,21 +384,27 @@ static void set_calibrarion_parameters(int band, int finetune)
     AMux_CapSw_Start();
 	if(band)
 	{
-		// 40kHz バンドの場合は、AMux_CapSWの0を接続する
-		AMux_CapSw_Connect(0);
+		// 40kHz バンドの場合は、AMux_CapSWの該当チャンネルを接続する
+		AMux_CapSw_Connect(AMux_CapSW_BAND40K_1);
+		AMux_CapSw_Connect(AMux_CapSW_BAND40K_2);
+
 	}
 	else
 	{
 		// そうでなければ切断する
-		AMux_CapSw_Disconnect(0);
+		AMux_CapSw_Disconnect(AMux_CapSW_BAND40K_1);
+		AMux_CapSw_Disconnect(AMux_CapSW_BAND40K_2);
+
 	}
 
 	// PWM_Tuneの設定
 	PWM_Tune_Start();
     Clock_PWMTune_Start();
-	// PWM周期はTUNE_MAXの倍の周期になっている。必ずduty非は50%以上で用いるため、TUNE_MAXを加算して用いる
+	// PWM周期はTUNE_MAXの倍の周期になっている。必ずduty比は50%以上で用いるため、TUNE_MAXを加算して用いる
 	PWM_Tune_WriteCompare(finetune + TUNE_MAX); 
 }
+
+
 
 #define ADC_WATCH_TIME 300
 #define ADC_BYPASS_CHAN_NUM 1
@@ -451,22 +466,21 @@ static unsigned int get_franklin_frequency()
  * ステートマシン用構造体
  */
 typedef struct {
-	uint32_t state_time; //!< 計測開始時間
-	int best40 : 16; //!< 40kHzでの最良のチューニング値
-	int best60 : 16; //!< 60kHzでの最良のチューニング値
-	int current : 16; //!< 現在調整中のチューニング値
-	int low : 16; //!< チューニング値下限
-	int high : 16; //!< チューニング値上限
-	int step : 16; //!< チューニングのステップ値
+	uint32_t start_time; //!< 計測開始時間
+	unsigned int best40 : 16; //!< 40kHzでの最良のチューニング値
+	unsigned int best60 : 16; //!< 60kHzでの最良のチューニング値
+	unsigned int current : 16; //!< 現在調整中のチューニング値
+	unsigned int low : 16; //!< チューニング値下限
+	unsigned int high : 16; //!< チューニング値上限
+	unsigned int step : 16; //!< チューニングのステップ値
 	int adc_low : 16; //!< ADC計測値、下限
 	int adc_high : 16; //!< ADC計測値、上限
 	int16_t best; //!< 現在計測中の最良のチューニング値
-	int16_t best_amps; //!< 現在計測中の最良の振幅
-	int level: 2;
-	int band: 1; //!< 現在スキャン中のバンド(0=60k, 1=40k)
-	int state: 4; //!< ステートマシンのステート
-	int substate: 3; //!< サブステート
-	int calibration_done: 1; //!< キャリブレーション終了を表すフラグ
+	int16_t best_amp; //!< 現在計測中の最良の振幅
+	unsigned int band : 1; //!< 現在スキャン中のバンド(0=60k, 1=40k)
+	unsigned int state : 4; //!< ステートマシンのステート
+	unsigned int substate : 4; //!< サブステート
+	unsigned int calibration_done : 1; //!< キャリブレーション終了を表すフラグ
 } tuning_state_t;
 static tuning_state_t tuning_state; //!< チューニング状態
 
@@ -481,7 +495,7 @@ static tuning_state_t tuning_state; //!< チューニング状態
 static void dump_tuning_state()
 {
 	uart_print("--tuning state dump--\r\n");
-	TUNE_DUMP(state_time);
+	TUNE_DUMP(start_time);
 	TUNE_DUMP(best40);
 	TUNE_DUMP(best60);
 	TUNE_DUMP(current);
@@ -491,8 +505,7 @@ static void dump_tuning_state()
 	TUNE_DUMP(adc_low);
 	TUNE_DUMP(adc_high);
 	TUNE_DUMP(best);
-	TUNE_DUMP(best_amps);
-	TUNE_DUMP(level);
+	TUNE_DUMP(best_amp);
 	TUNE_DUMP(band);
 	TUNE_DUMP(state);
 	TUNE_DUMP(substate);
@@ -535,14 +548,17 @@ dump_tuning_state();
 
 // 上記各「調整中」は以下のサブステートに別れる。
 #define TUNE_SUBSTATE_TUNE_INIT 0 //!< 初期化
-#define TUNE_SUBSTATE_TUNE_PREPARE 1 //!< チューニングPWMやADCを設定
-#define TUNE_SUBSTATE_TUNE_WAIT 2 //!< チューニングPWM変更直後のウェイト
-#define TUNE_SUBSTATE_MEASURE 3 //!< 値を計測中
-#define TUNE_SUBSTATE_DONE 4 //!< 計測終了
+#define TUNE_SUBSTATE_TUNE_START_TUNE 1 //!< 一回のイテレーションの開始
+#define TUNE_SUBSTATE_TUNE_WAIT_STABLE 2 //!< チューニングPWMnの最初の値を設定し、出力が安定するまで待つ
+#define TUNE_SUBSTATE_TUNE_PREPARE 3 //!< チューニングPWMやADCを設定
+#define TUNE_SUBSTATE_TUNE_WAIT 4 //!< チューニングPWM変更直後のウェイト
+#define TUNE_SUBSTATE_MEASURE 5 //!< 値を計測中
+#define TUNE_SUBSTATE_DONE 6 //!< 計測終了
 
 
 
 #define TUNE_PWM_STABILIZATION_WAIT 2500 //!< TunePWMを変更したあとに安定するまで待つミリ秒数
+#define TUNE_PWM_LARGE_STABILIZATION_WAIT 5000 //!< TunePWMを変更したあとに安定するまで待つミリ秒数(大きな値の変更時)
 #define TUNE_MEASURE_TIME 500 //!< ADCにて値を計測する時間
 
 
@@ -576,9 +592,10 @@ static void tuning_measure_adc()
 	// ここで注意したいのは、突発的なノイズによる異常値の観測である。
 	// ここではJJY受信時の、検波後の値の上限と下限を設定するような
 	// アルゴリズムを採用する。
-	int16_t th_l = tuning_state.low;
-	int16_t th_h = tuning_state.high;
-	int16_t p_th_l = th_l;
+	int16_t th_l = tuning_state.adc_low;
+	int16_t th_h = tuning_state.adc_high;
+/*
+    int16_t p_th_l = th_l;
 	int16_t p_th_h = th_h;
 	th_h += (int)(p_th_l - p_th_h) >> 10;
 	th_l += (int)(p_th_h - p_th_l) >> 11;
@@ -587,10 +604,12 @@ static void tuning_measure_adc()
 		th_h += (int)(res - th_h) >> 6;
 	if(th_l > res)
 		th_l += (int)(res - th_l) >> 6;
+*/
+    if(th_l > res) th_l = res;
+    if(th_h < res) th_h = res;
 
-
-	tuning_state.low = th_l;
-	tuning_state.high = th_h;
+	tuning_state.adc_low = th_l;
+	tuning_state.adc_high = th_h;
 }
 
 
@@ -602,8 +621,9 @@ static void init_tuning_best()
 	tuning_state.low = 0;
 	tuning_state.high = TUNE_MAX;
 	tuning_state.step = TUNE_INITIAL_TUNE_STEP;
-	tuning_state.best = (uint16_t)-1;
+	tuning_state.best = -1;
 	tuning_state.best_amp = 0;
+    tuning_state.current = 0;
 }
 
 /**
@@ -614,8 +634,8 @@ static void tuning_set_next_loop_parameters()
 	// best を中心に、 best_value-TUNE_INITIAL_TUNE_STEP*2,
 	// best_value+TUNE_INITIAL_TUNE_STEP*2あたりをスキャンする
 	uint16_t step = tuning_state.step * 2;
-	int16_t low = best_value - step;
-	int16_t high = best_value + step;
+	int16_t low = tuning_state.best - step;
+	int16_t high = tuning_state.best + step;
 	step = 1;
 
 	// 範囲外を補正する
@@ -634,8 +654,9 @@ static void tuning_set_next_loop_parameters()
 	tuning_state.step = step;
 	tuning_state.low = low;
 	tuning_state.high = high;
-	tuning_state.best = (uint16_t)-1;
+	tuning_state.best = -1;
 	tuning_state.best_amp = 0;
+    tuning_state.current = low;
 }
 
 
@@ -650,12 +671,27 @@ static void tuning_subhandler()
 	case TUNE_SUBSTATE_TUNE_INIT: //!< チューニングPWMやADCを設定
 		init_tune_adc();
 		init_tuning_best();
-		set_tuning_substate(TUNE_SUBSTATE_TUNE_PREPARE);
+       	set_calibration_ref_clock(tuning_state.band);
+        tuning_state.start_time = system_time;
+		set_tuning_substate(TUNE_SUBSTATE_TUNE_START_TUNE);
 		break;
 
+    case TUNE_SUBSTATE_TUNE_START_TUNE:
+        set_calibrarion_parameters(tuning_state.band, tuning_state.current);
+		tuning_state.start_time = system_time;
+        set_tuning_substate(TUNE_SUBSTATE_TUNE_WAIT_STABLE);
+        break;
+        
+        
+    case TUNE_SUBSTATE_TUNE_WAIT_STABLE:
+        if(is_elapsed(tuning_state.start_time, TUNE_PWM_LARGE_STABILIZATION_WAIT))
+        {
+            set_tuning_substate(TUNE_SUBSTATE_TUNE_PREPARE);
+        }
+        break;
+        
 	case TUNE_SUBSTATE_TUNE_PREPARE:
-		set_calibrarion_parameters(tuning_state.state == TUNE_STATE_40K ?
-			1: 0, tuning_state.current);
+		set_calibrarion_parameters(tuning_state.band, tuning_state.current);
 		tuning_state.start_time = system_time;
 		set_tuning_substate(TUNE_SUBSTATE_TUNE_WAIT);
 		break;
@@ -687,20 +723,21 @@ uart_print(" ... ");
 
 			// 現在の値を格納
 			uint16_t amp = tuning_state.adc_high - tuning_state.adc_low;
+uart_print("result : ");
 uart_send_dec32(amp);
 uart_print("\r\n");
-			if(tuning_state.best == (uint16_t)-1 ||
+			if(tuning_state.best == -1 ||
 				tuning_state.best_amp < amp)
 			{
 				tuning_state.best = tuning_state.current;
-				tuning_state.amp = amp;
+				tuning_state.best_amp = amp;
 			}
 
 			// current を加算する
 			tuning_state.current += tuning_state.step;
 
 			// 最後か？
-			if(tuning_state.current >= tuning_state.max)
+			if(tuning_state.current >= tuning_state.high)
 			{
 				// 最後を示している
 				// 再度繰り返す必要があるか？
@@ -710,7 +747,7 @@ uart_print("\r\n");
 					// 繰り返す必要はないので
 					// TUNE_SUBSTATE_DONE に移行する
 					// すでに一番細かい単位でのスキャンが終わった
-					if(tuning_state.state == TUNE_STATE_40K)
+					if(tuning_state.band == 1)
 						tuning_state.best40 = tuning_state.best;
 					else
 						tuning_state.best60 = tuning_state.best;
@@ -720,10 +757,17 @@ uart_print("\r\n");
 				{
 					// 再びTUNE_SUBSTATE_TUNE_PREPAREに戻る
 					tuning_set_next_loop_parameters();
-					set_tuning_substate(TUNE_SUBSTATE_TUNE_PREPARE);
+					set_tuning_substate(TUNE_SUBSTATE_TUNE_START_TUNE);
 					tuning_state.start_time = system_time;
 				}
 			}
+            else
+            {
+                // 最後ではない。
+                //  TUNE_SUBSTATE_TUNE_PREPAREにもどる
+                set_tuning_substate(TUNE_SUBSTATE_TUNE_PREPARE);
+            }
+        }
 		break;
 		
 
@@ -748,7 +792,10 @@ static void tuning_handler()
 
 	case TUNE_STATE_40K: //!< 40k 調整中
 	case TUNE_STATE_60K: //!< 60k 調整中
-
+        if(tuning_state.state == TUNE_STATE_40K)
+            tuning_state.band = 1;
+        else
+            tuning_state.band = 0;
 
 		tuning_subhandler();
 
@@ -784,6 +831,42 @@ static void tuning_handler()
 
 
 
+/**
+ * ADCをしばらくサンプリングし、最大振幅を得る
+ */
+static unsigned int get_adc_amplitude()
+{
+	// バイパス用チャンネルのみを有効にする
+	ADC_SetChanMask(1<<ADC_BYPASS_CHAN_NUM);
+	// Clock_ADCを無効にする
+	Clock_ADC_Stop();
+	// ADC割り込みを無効にする
+	ADC_IRQ_Disable();
+
+
+	// 一定期間サンプリングを続け最大値と最小値を得る
+	int16_t min = SHRT_MAX;
+	int16_t max = SHRT_MIN;
+	for(uint32_t s = system_time; (int32_t)(system_time - s) < ADC_WATCH_TIME; )
+	{
+		ADC_StartConvert();
+		ADC_IsEndConversion(ADC_WAIT_FOR_RESULT);
+
+		int16_t res = (int16_t) ADC_GetResult16(ADC_BYPASS_CHAN_NUM);
+		if(min > res) min = res;
+		if(max < res) max = res;
+	}
+	
+	// ADC割り込みを有効にする
+	ADC_IRQ_Enable();
+	// ADC の有効チャンネル設定を元に戻す
+	ADC_SetChanMask(ADC_DEFAULT_EN_CHANNELS);
+	// Clock_ADCを有効にする
+	Clock_ADC_Start();
+
+	// 結果を返す
+	return max - min;
+}
 
 
 
@@ -822,18 +905,13 @@ int main()
 	SysTick_Config(CLOCK_FREQ/int_freq);//int_freqを設定 
 
 	
-	init_calibration(0);
-	set_calibration_ref_clock(1);
-	init_tuning_state();
 	for(;;)
 	{
 
 		tuning_handler();
 
-    
-    uart_print("\r\n");
 	}
-		
+
 #if 0
 		uart_print("int count");
 		Timer_Franklin_WriteCounter(0);

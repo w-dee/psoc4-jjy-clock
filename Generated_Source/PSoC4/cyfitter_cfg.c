@@ -337,10 +337,13 @@ void AMux_CapSw_Set(uint8 channel)
 {
 	switch (channel) {
 		case 0u:
-			CY_SET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2, (CY_GET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2) | 0x60000000u));
+			CY_SET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2, (CY_GET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2) | 0x6000u));
 			break;
 		case 1u:
-			CY_SET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2, (CY_GET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2) | 0x6000u));
+			CY_SET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2, (CY_GET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2) | 0x60000000u));
+			break;
+		case 2u:
+			CY_SET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2, (CY_GET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2) | 0x6000000u));
 			break;
 		default:
 			break;
@@ -365,10 +368,13 @@ void AMux_CapSw_Unset(uint8 channel)
 {
 	switch (channel) {
 		case 0u:
-			CY_SET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2, (CY_GET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2) & 0x9fffffffu));
+			CY_SET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2, (CY_GET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2) & 0xffff9fffu));
 			break;
 		case 1u:
-			CY_SET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2, (CY_GET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2) & 0xffff9fffu));
+			CY_SET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2, (CY_GET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2) & 0x9fffffffu));
+			break;
+		case 2u:
+			CY_SET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2, (CY_GET_REG32((void CYXDATA *)CYREG_HSIOM_PORT_SEL2) & 0xf9ffffffu));
 			break;
 		default:
 			break;
@@ -684,8 +690,8 @@ void cyfitter_cfg(void)
 		CY_SET_XTND_REG32((void CYFAR *)(CYREG_PRT1_PC2), 0x000000BFu);
 
 		/* IOPINS0_2 Starting address: CYDEV_PRT2_DR */
-		CY_SET_XTND_REG32((void CYFAR *)(CYREG_PRT2_DR), 0x0000008Fu);
-		CY_SET_XTND_REG32((void CYFAR *)(CYREG_PRT2_PC2), 0x0000008Fu);
+		CY_SET_XTND_REG32((void CYFAR *)(CYREG_PRT2_DR), 0x000000CFu);
+		CY_SET_XTND_REG32((void CYFAR *)(CYREG_PRT2_PC2), 0x000000CFu);
 
 		/* IOPINS0_3 Starting address: CYDEV_PRT3_DR */
 		CY_SET_XTND_REG32((void CYFAR *)(CYREG_PRT3_DR), 0x00000063u);
@@ -707,7 +713,7 @@ void cyfitter_cfg(void)
 
 		/* UDB_PA_2 Starting address: CYDEV_UDB_PA2_BASE */
 		CY_SET_XTND_REG32((void CYFAR *)(CYDEV_UDB_PA2_BASE), 0x00990000u);
-		CY_SET_XTND_REG32((void CYFAR *)(CYREG_UDB_PA2_CFG8), 0x80800000u);
+		CY_SET_XTND_REG32((void CYFAR *)(CYREG_UDB_PA2_CFG8), 0xA0800000u);
 
 		/* UDB_PA_3 Starting address: CYDEV_UDB_PA3_BASE */
 		CY_SET_XTND_REG32((void CYFAR *)(CYDEV_UDB_PA3_BASE), 0x00990000u);

@@ -42,7 +42,7 @@ void AMux_CapSw_FastSelect(uint8 channel) ;
 *         Parameter Constants
 ***************************************/
 
-#define AMux_CapSw_CHANNELS  2u
+#define AMux_CapSw_CHANNELS  3u
 #define AMux_CapSw_MUXTYPE   1
 #define AMux_CapSw_ATMOSTONE 0
 

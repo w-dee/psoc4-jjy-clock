@@ -26,6 +26,8 @@
 #include <Pin_Opamp2Out.h>
 #include <Pin_Opamp2Out_aliases.h>
 #include <ADC.h>
+#include <Pin_BandSel.h>
+#include <Pin_BandSel_aliases.h>
 #include <Pin_Opamp2M.h>
 #include <Pin_Opamp2M_aliases.h>
 #include <Pin_Gain2.h>
@@ -43,8 +45,8 @@
 #include <UART_SPI_UART_PVT.h>
 #include <UART_PVT.h>
 #include <UART_BOOT.h>
-#include <Pin_BandSel.h>
-#include <Pin_BandSel_aliases.h>
+#include <Pin_BandSel2.h>
+#include <Pin_BandSel2_aliases.h>
 #include <AMux_CapSw.h>
 #include <Pin_LED.h>
 #include <Pin_LED_aliases.h>
