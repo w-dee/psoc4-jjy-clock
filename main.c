@@ -53,8 +53,10 @@
 #include <project.h>
 #include <string.h>
 
+#define CALIBRATION
 //#define SAMPLING
-#define JJYSIM
+//#define JJYSIM
+
 
 
 #define CLOCK_FREQ CYDEV_BCLK__SYSCLK__HZ    //クロック周波数
@@ -916,29 +918,37 @@ int main()
 	CyIntSetSysVector(15,SysTic_Handler);//Int アドレス設定
 	SysTick_Config(CLOCK_FREQ/int_freq);//int_freqを設定 
 
-#if 0
+    
+    
     init_tune_adc();
     init_calibration(1);
-    set_calibrarion_parameters(0, 1023);
-    for(;;)
-    {
-           uart_print("amp: ");
-        uart_send_dec32(get_adc_amplitude());
-/*
-        uart_print(" freq: ");
-        uart_send_dec32(get_franklin_frequency());
-*/
-        uart_print("\r\n");
-    }
-#endif
+#ifdef CALIBRATION
+    #if 0
+        set_calibrarion_parameters(0, 1023);
+        for(;;)
+        {
+               uart_print("amp: ");
+            uart_send_dec32(get_adc_amplitude());
+    /*
+            uart_print(" freq: ");
+            uart_send_dec32(get_franklin_frequency());
+    */
+            uart_print("\r\n");
+        }
+    #endif
+
 	for(;;)
 	{
 
 		tuning_handler();
 
 	}
-
+    
+#endif
 #if 0
+    set_calibrarion_parameters(0, 762); // 60k    
+    set_calibrarion_parameters(1, 133); // 40k    
+
 		uart_print("int count");
 		Timer_Franklin_WriteCounter(0);
 		int high16 = 0;
@@ -1014,7 +1024,7 @@ uart_print("\r\n\r\n");
 	}
 
 
-}
+
     for(;;)
     {
         /* The PSoC 4 is put into Sleep Mode as the PWM component is used to 
