@@ -152,7 +152,7 @@ void uart_send_dec32(int32_t val)
 #define ADC_CLOCK_DIVIDER 1250
 
 
-#define SHIFT_FREQ (20000000.0 / (251) / 2)
+#define SHIFT_FREQ (44480000.0 / (602) / 2)
 #define INPUT_FREQ (40000.0 - SHIFT_FREQ)
 
 #define ADC_INTERRUPT_FREQ (5000000.0 / ADC_CLOCK_DIVIDER) 
@@ -173,9 +173,9 @@ static volatile	uint32_t threshold = 0;
 
 #if ADC_CLOCK_DIVIDER == 1250
 
-static int32_t b = 31622;
+static int32_t b = 31804;
 	
-static int32_t c = 16255;
+static int32_t c = 16128;
 #else
     #error unknown ADC_CLOCK_DIVIDER value
 #endif
@@ -344,6 +344,7 @@ static void uninit_calibration()
 #define TUNE_MAX 1024
 #define TUNE_INITIAL_TUNE_STEP 10
 
+
 /**
  * Pin_MixClockOut の出力周波数を設定する
  * @param		band		受信バンド設定(0=60kHzバンド, 1=40kHzバンド)
@@ -373,14 +374,15 @@ static void set_calibration_ref_clock(int band)
 }
 
 
+
 /**
- * キャリブレーションに必要なパラメーターを設定する
+ * バンドとファインチューニングの設定を行う(TODO: mixクロックの設定、フィルター係数の設定)
  * @param		band		受信バンド設定(0=60kHzバンド, 1=40kHzバンド)
  * @param		finetune	チューニング設定(0 to 1024)
  * @note		PWM_Tuneは時定数が大きいので、この関数を呼んですぐに設定が反映さ
 *  				れるとは限らない。回路図中のCR時定数を確認して十分なウェイトを取ること
  */
-static void set_calibrarion_parameters(int band, int finetune)
+static void set_band_and_fine_tuning(int band, int finetune)
 {
 	// Pin_BandSelの設定
     AMux_CapSw_Start();
@@ -686,7 +688,7 @@ static void tuning_subhandler()
 		break;
 
     case TUNE_SUBSTATE_TUNE_START_TUNE:
-        set_calibrarion_parameters(tuning_state.band, tuning_state.current);
+        set_band_and_fine_tuning(tuning_state.band, tuning_state.current);
 		tuning_state.start_time = system_time;
         set_tuning_substate(TUNE_SUBSTATE_TUNE_WAIT_STABLE);
         break;
@@ -700,7 +702,7 @@ static void tuning_subhandler()
         break;
         
 	case TUNE_SUBSTATE_TUNE_PREPARE:
-		set_calibrarion_parameters(tuning_state.band, tuning_state.current);
+		set_band_and_fine_tuning(tuning_state.band, tuning_state.current);
 		tuning_state.start_time = system_time;
 		set_tuning_substate(TUNE_SUBSTATE_TUNE_WAIT);
 		break;
@@ -884,11 +886,6 @@ static unsigned int get_adc_amplitude()
 
 
 
-
-
-
-
-
 int main()
 {
     ADC_Init();
@@ -918,7 +915,9 @@ int main()
 
     
     CyGlobalIntEnable; 
-   
+
+    uninit_calibration();
+    
 #ifdef CALIBRATION
     init_tune_adc();
     init_calibration(1);
@@ -960,7 +959,7 @@ int main()
 #endif
 
 //    set_calibrarion_parameters(0, 762); // 60k    
-    set_calibrarion_parameters(1, 133); // 40k    
+    set_band_and_fine_tuning(1, 133); // 40k    
 
 
 for(uint32_t s = system_time; system_time < s+ 1000; )
@@ -1008,12 +1007,15 @@ uart_print("\r\n\r\n");
 
     
     
-    
-    for(uint32_t s = system_time; system_time < s+ 1000; ) /**/ ;
-    
-    
-    uart_print("\r\n");
-
+    for(int i = 0; i < 20 ; i++)
+    {
+        while(system_time < next_tick) /**/;
+        next_tick += 50;
+        if(timecode)
+            uart_print("1");
+        else
+                uart_print("0");
+    }
 	uart_print("\r\n");
 	uart_print("\r\n output_value:");
 	uart_send_dec32(output_value);
