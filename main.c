@@ -53,7 +53,7 @@
 #include <project.h>
 #include <string.h>
 
-#define CALIBRATION
+//#define CALIBRATION
 //#define SAMPLING
 //#define JJYSIM
 
@@ -607,9 +607,9 @@ static void tuning_measure_adc()
 	th_l += (int)(p_th_h - p_th_l) >> 11;
 
 	if(th_h < res)
-		th_h += (int)(res - th_h) >> 6;
+		th_h += (int)(res - th_h) >> 4;
 	if(th_l > res)
-		th_l += (int)(res - th_l) >> 6;
+		th_l += (int)(res - th_l) >> 4;
 
 #else
       
@@ -907,22 +907,21 @@ int main()
 	uart_print("\r\n\r\nwelcome\r\n\r\n");
 	
 
-    CyGlobalIntEnable; 
 
     AMux_Gain_Connect(1);
    
     ADC_IRQ_Enable();
 
-	Timer_Franklin_Start();
 	
 	CyIntSetSysVector(15,SysTic_Handler);//Int アドレス設定
 	SysTick_Config(CLOCK_FREQ/int_freq);//int_freqを設定 
 
     
-    
+    CyGlobalIntEnable; 
+   
+#ifdef CALIBRATION
     init_tune_adc();
     init_calibration(1);
-#ifdef CALIBRATION
     #if 0
         set_calibrarion_parameters(0, 1023);
         for(;;)
@@ -946,9 +945,6 @@ int main()
     
 #endif
 #if 0
-    set_calibrarion_parameters(0, 762); // 60k    
-    set_calibrarion_parameters(1, 133); // 40k    
-
 		uart_print("int count");
 		Timer_Franklin_WriteCounter(0);
 		int high16 = 0;
@@ -962,6 +958,9 @@ int main()
 		uart_send_udec32(Timer_Franklin_ReadCounter() + (high16 << 16));
 		uart_print("\r\n\r\n");
 #endif
+
+//    set_calibrarion_parameters(0, 762); // 60k    
+    set_calibrarion_parameters(1, 133); // 40k    
 
 
 for(uint32_t s = system_time; system_time < s+ 1000; )
@@ -1006,7 +1005,14 @@ uart_print("\r\n\r\n");
 #endif
 
 #ifndef SAMPLING
-        uart_print("\r\n");
+
+    
+    
+    
+    for(uint32_t s = system_time; system_time < s+ 1000; ) /**/ ;
+    
+    
+    uart_print("\r\n");
 
 	uart_print("\r\n");
 	uart_print("\r\n output_value:");
