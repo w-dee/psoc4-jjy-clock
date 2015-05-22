@@ -1,5 +1,5 @@
 /*******************************************************************************
-* File Name: Clock_5M_1.c
+* File Name: Clock_Franklin.c
 * Version 2.20
 *
 *  Description:
@@ -17,12 +17,12 @@
 *******************************************************************************/
 
 #include <cydevice_trm.h>
-#include "Clock_5M_1.h"
+#include "Clock_Franklin.h"
 
 #if defined CYREG_PERI_DIV_CMD
 
 /*******************************************************************************
-* Function Name: Clock_5M_1_StartEx
+* Function Name: Clock_Franklin_StartEx
 ********************************************************************************
 *
 * Summary:
@@ -36,24 +36,24 @@
 *  None
 *
 *******************************************************************************/
-void Clock_5M_1_StartEx(uint32 alignClkDiv)
+void Clock_Franklin_StartEx(uint32 alignClkDiv)
 {
     /* Make sure any previous start command has finished. */
-    while((Clock_5M_1_CMD_REG & Clock_5M_1_CMD_ENABLE_MASK) != 0u)
+    while((Clock_Franklin_CMD_REG & Clock_Franklin_CMD_ENABLE_MASK) != 0u)
     {
     }
     
     /* Specify the target divider and it's alignment divider, and enable. */
-    Clock_5M_1_CMD_REG =
-        ((uint32)Clock_5M_1__DIV_ID << Clock_5M_1_CMD_DIV_SHIFT)|
-        (alignClkDiv << Clock_5M_1_CMD_PA_DIV_SHIFT) |
-        (uint32)Clock_5M_1_CMD_ENABLE_MASK;
+    Clock_Franklin_CMD_REG =
+        ((uint32)Clock_Franklin__DIV_ID << Clock_Franklin_CMD_DIV_SHIFT)|
+        (alignClkDiv << Clock_Franklin_CMD_PA_DIV_SHIFT) |
+        (uint32)Clock_Franklin_CMD_ENABLE_MASK;
 }
 
 #else
 
 /*******************************************************************************
-* Function Name: Clock_5M_1_Start
+* Function Name: Clock_Franklin_Start
 ********************************************************************************
 *
 * Summary:
@@ -67,17 +67,17 @@ void Clock_5M_1_StartEx(uint32 alignClkDiv)
 *
 *******************************************************************************/
 
-void Clock_5M_1_Start(void)
+void Clock_Franklin_Start(void)
 {
     /* Set the bit to enable the clock. */
-    Clock_5M_1_ENABLE_REG |= Clock_5M_1__ENABLE_MASK;
+    Clock_Franklin_ENABLE_REG |= Clock_Franklin__ENABLE_MASK;
 }
 
 #endif /* CYREG_PERI_DIV_CMD */
 
 
 /*******************************************************************************
-* Function Name: Clock_5M_1_Stop
+* Function Name: Clock_Franklin_Stop
 ********************************************************************************
 *
 * Summary:
@@ -92,31 +92,31 @@ void Clock_5M_1_Start(void)
 *  None
 *
 *******************************************************************************/
-void Clock_5M_1_Stop(void)
+void Clock_Franklin_Stop(void)
 {
 #if defined CYREG_PERI_DIV_CMD
 
     /* Make sure any previous start command has finished. */
-    while((Clock_5M_1_CMD_REG & Clock_5M_1_CMD_ENABLE_MASK) != 0u)
+    while((Clock_Franklin_CMD_REG & Clock_Franklin_CMD_ENABLE_MASK) != 0u)
     {
     }
     
     /* Specify the target divider and it's alignment divider, and disable. */
-    Clock_5M_1_CMD_REG =
-        ((uint32)Clock_5M_1__DIV_ID << Clock_5M_1_CMD_DIV_SHIFT)|
-        ((uint32)Clock_5M_1_CMD_DISABLE_MASK);
+    Clock_Franklin_CMD_REG =
+        ((uint32)Clock_Franklin__DIV_ID << Clock_Franklin_CMD_DIV_SHIFT)|
+        ((uint32)Clock_Franklin_CMD_DISABLE_MASK);
 
 #else
 
     /* Clear the bit to disable the clock. */
-    Clock_5M_1_ENABLE_REG &= (uint32)(~Clock_5M_1__ENABLE_MASK);
+    Clock_Franklin_ENABLE_REG &= (uint32)(~Clock_Franklin__ENABLE_MASK);
     
 #endif /* CYREG_PERI_DIV_CMD */
 }
 
 
 /*******************************************************************************
-* Function Name: Clock_5M_1_SetFractionalDividerRegister
+* Function Name: Clock_Franklin_SetFractionalDividerRegister
 ********************************************************************************
 *
 * Summary:
@@ -131,35 +131,35 @@ void Clock_5M_1_Stop(void)
 *  None
 *
 *******************************************************************************/
-void Clock_5M_1_SetFractionalDividerRegister(uint16 clkDivider, uint8 clkFractional)
+void Clock_Franklin_SetFractionalDividerRegister(uint16 clkDivider, uint8 clkFractional)
 {
     uint32 maskVal;
     uint32 regVal;
     
-#if defined (Clock_5M_1__FRAC_MASK) || defined (CYREG_PERI_DIV_CMD)
+#if defined (Clock_Franklin__FRAC_MASK) || defined (CYREG_PERI_DIV_CMD)
     
 	/* get all but divider bits */
-    maskVal = Clock_5M_1_DIV_REG & 
-                    (uint32)(~(uint32)(Clock_5M_1_DIV_INT_MASK | Clock_5M_1_DIV_FRAC_MASK)); 
+    maskVal = Clock_Franklin_DIV_REG & 
+                    (uint32)(~(uint32)(Clock_Franklin_DIV_INT_MASK | Clock_Franklin_DIV_FRAC_MASK)); 
 	/* combine mask and new divider vals into 32-bit value */
     regVal = maskVal |
-        ((uint32)((uint32)clkDivider <<  Clock_5M_1_DIV_INT_SHIFT) & Clock_5M_1_DIV_INT_MASK) |
-        ((uint32)((uint32)clkFractional << Clock_5M_1_DIV_FRAC_SHIFT) & Clock_5M_1_DIV_FRAC_MASK);
+        ((uint32)((uint32)clkDivider <<  Clock_Franklin_DIV_INT_SHIFT) & Clock_Franklin_DIV_INT_MASK) |
+        ((uint32)((uint32)clkFractional << Clock_Franklin_DIV_FRAC_SHIFT) & Clock_Franklin_DIV_FRAC_MASK);
     
 #else
     /* get all but integer divider bits */
-    maskVal = Clock_5M_1_DIV_REG & (uint32)(~(uint32)Clock_5M_1__DIVIDER_MASK);
+    maskVal = Clock_Franklin_DIV_REG & (uint32)(~(uint32)Clock_Franklin__DIVIDER_MASK);
     /* combine mask and new divider val into 32-bit value */
     regVal = clkDivider | maskVal;
     
-#endif /* Clock_5M_1__FRAC_MASK || CYREG_PERI_DIV_CMD */
+#endif /* Clock_Franklin__FRAC_MASK || CYREG_PERI_DIV_CMD */
 
-    Clock_5M_1_DIV_REG = regVal;
+    Clock_Franklin_DIV_REG = regVal;
 }
 
 
 /*******************************************************************************
-* Function Name: Clock_5M_1_GetDividerRegister
+* Function Name: Clock_Franklin_GetDividerRegister
 ********************************************************************************
 *
 * Summary:
@@ -173,15 +173,15 @@ void Clock_5M_1_SetFractionalDividerRegister(uint16 clkDivider, uint8 clkFractio
 *  divide by 2, the return value will be 1.
 *
 *******************************************************************************/
-uint16 Clock_5M_1_GetDividerRegister(void)
+uint16 Clock_Franklin_GetDividerRegister(void)
 {
-    return (uint16)((Clock_5M_1_DIV_REG & Clock_5M_1_DIV_INT_MASK)
-        >> Clock_5M_1_DIV_INT_SHIFT);
+    return (uint16)((Clock_Franklin_DIV_REG & Clock_Franklin_DIV_INT_MASK)
+        >> Clock_Franklin_DIV_INT_SHIFT);
 }
 
 
 /*******************************************************************************
-* Function Name: Clock_5M_1_GetFractionalDividerRegister
+* Function Name: Clock_Franklin_GetFractionalDividerRegister
 ********************************************************************************
 *
 * Summary:
@@ -195,15 +195,15 @@ uint16 Clock_5M_1_GetDividerRegister(void)
 *  0 if the fractional divider is not in use.
 *
 *******************************************************************************/
-uint8 Clock_5M_1_GetFractionalDividerRegister(void)
+uint8 Clock_Franklin_GetFractionalDividerRegister(void)
 {
-#if defined (Clock_5M_1__FRAC_MASK)
+#if defined (Clock_Franklin__FRAC_MASK)
     /* return fractional divider bits */
-    return (uint8)((Clock_5M_1_DIV_REG & Clock_5M_1_DIV_FRAC_MASK)
-        >> Clock_5M_1_DIV_FRAC_SHIFT);
+    return (uint8)((Clock_Franklin_DIV_REG & Clock_Franklin_DIV_FRAC_MASK)
+        >> Clock_Franklin_DIV_FRAC_SHIFT);
 #else
     return 0u;
-#endif /* Clock_5M_1__FRAC_MASK */
+#endif /* Clock_Franklin__FRAC_MASK */
 }
 
 

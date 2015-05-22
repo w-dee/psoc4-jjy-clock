@@ -53,7 +53,7 @@
 #include <project.h>
 #include <string.h>
 
-//#define CALIBRATION
+#define CALIBRATION
 //#define SAMPLING
 //#define JJYSIM
 
@@ -327,9 +327,9 @@ static void init_calibration(int enable_franklin_fb)
  */
 static void uninit_calibration()
 {
-	// Pin_MixClockOutをHigh impedance analogに変更し、出力
+	// Pin_AntennaAuxOutをHigh impedance analogに変更し、出力
 	// をオフにする
-	Pin_MixClockOut_SetDriveMode(Pin_MixClockOut_DM_ALG_HIZ);
+	Pin_AntennaAuxOut_SetDriveMode(Pin_AntennaAuxOut_DM_ALG_HIZ);
 
 
 	// AMux_CapSWのうち、フランクリン発振器を有効にするためのラインを切断する
@@ -346,30 +346,30 @@ static void uninit_calibration()
 
 
 /**
- * Pin_MixClockOut の出力周波数を設定する
+ * Pin_AntennaAuxOut の出力周波数を設定する
  * @param		band		受信バンド設定(0=60kHzバンド, 1=40kHzバンド)
 */
 static void set_calibration_ref_clock(int band)
 {
-	// Pin_MixClockOutをStrong Driveのdigital outに設定。
-	// Pin_MixClockOutはClocl_MIXの出力をT-FFで1/2分周した出力に
-	// つながっていて、普段は周波数ミキサーを駆動するために使われているが、
+	// Pin_AntennaAuxOutをStrong Driveのdigital outに設定。
+	// Pin_AntennaAuxOutはClock_AntennaAuxの出力をT-FFで1/2分周した出力に
+	// つながっていて、
 	// キャリブレーション時はこれをキャリブレーションの基準周波数を
 	// フェライトバーアンテナのコイルに供給するために用いる
-	Pin_MixClockOut_SetDriveMode(Pin_MixClockOut_DM_STRONG);
+	Pin_AntennaAuxOut_SetDriveMode(Pin_AntennaAuxOut_DM_STRONG);
 
-	// Clock_MIX_SetDividerValue 関数への設定値は、所望の値の半分、つまり
+	// Clock_AntennaAux_SetDividerValue 関数への設定値は、所望の値の半分、つまり
 	// 倍の周波数を設定する。これは、クロック出力がT-FFで半分の周波数にされているため。回路図を参照のこと。
-    Clock_MIX_Start();
+    Clock_AntennaAux_Start();
 	if(band)
 	{
 		// 40kHz
-		Clock_MIX_SetDividerValue(CLOCK_FREQ / 40000ul / 2);
+		Clock_AntennaAux_SetDividerValue(CLOCK_FREQ / 40000ul / 2);
 	}
 	else
 	{
 		// 60kHz
-		Clock_MIX_SetDividerValue(CLOCK_FREQ / 60000ul / 2);
+		Clock_AntennaAux_SetDividerValue(CLOCK_FREQ / 60000ul / 2);
 	}
 }
 
@@ -563,7 +563,7 @@ dump_tuning_state();
 
 #define TUNE_PWM_STABILIZATION_WAIT 2500 //!< TunePWMを変更したあとに安定するまで待つミリ秒数
 #define TUNE_PWM_LARGE_STABILIZATION_WAIT 5000 //!< TunePWMを変更したあとに安定するまで待つミリ秒数(大きな値の変更時)
-#define TUNE_MEASURE_TIME 500 //!< ADCにて値を計測する時間
+#define TUNE_MEASURE_TIME 1000 //!< ADCにて値を計測する時間
 
 
 /**
@@ -609,9 +609,9 @@ static void tuning_measure_adc()
 	th_l += (int)(p_th_h - p_th_l) >> 11;
 
 	if(th_h < res)
-		th_h += (int)(res - th_h) >> 4;
+		th_h += (int)(res - th_h) >> 5;
 	if(th_l > res)
-		th_l += (int)(res - th_l) >> 4;
+		th_l += (int)(res - th_l) >> 5;
 
 #else
       
@@ -888,6 +888,12 @@ static unsigned int get_adc_amplitude()
 
 int main()
 {
+
+	
+	CyIntSetSysVector(15,SysTic_Handler);//Int アドレス設定
+	SysTick_Config(CLOCK_FREQ/int_freq);//int_freqを設定 
+
+
     ADC_Init();
     
     ADC_Start();
@@ -900,24 +906,20 @@ int main()
 
     Opamp_2_Start();
 
-    UART_Start();
-	uart_print("\r\n\r\nwelcome\r\n\r\n");
-	
 
 
     AMux_Gain_Connect(1);
    
     ADC_IRQ_Enable();
 
-	
-	CyIntSetSysVector(15,SysTic_Handler);//Int アドレス設定
-	SysTick_Config(CLOCK_FREQ/int_freq);//int_freqを設定 
-
-    
+    uninit_calibration();
+        
     CyGlobalIntEnable; 
 
-    uninit_calibration();
-    
+    UART_Start();
+	uart_print("\r\n\r\nwelcome\r\n\r\n");
+	
+
 #ifdef CALIBRATION
     init_tune_adc();
     init_calibration(1);

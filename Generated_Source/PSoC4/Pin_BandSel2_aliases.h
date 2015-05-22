@@ -1,5 +1,5 @@
 /*******************************************************************************
-* File Name: Pin_Franklin_M.h  
+* File Name: Pin_BandSel2.h  
 * Version 2.10
 *
 * Description:
@@ -15,8 +15,8 @@
 * the software package with which this file was provided.
 *******************************************************************************/
 
-#if !defined(CY_PINS_Pin_Franklin_M_ALIASES_H) /* Pins Pin_Franklin_M_ALIASES_H */
-#define CY_PINS_Pin_Franklin_M_ALIASES_H
+#if !defined(CY_PINS_Pin_BandSel2_ALIASES_H) /* Pins Pin_BandSel2_ALIASES_H */
+#define CY_PINS_Pin_BandSel2_ALIASES_H
 
 #include "cytypes.h"
 #include "cyfitter.h"
@@ -26,14 +26,14 @@
 /***************************************
 *              Constants        
 ***************************************/
-#define Pin_Franklin_M_0		(Pin_Franklin_M__0__PC)
-#define Pin_Franklin_M_0_PS		(Pin_Franklin_M__0__PS)
-#define Pin_Franklin_M_0_PC		(Pin_Franklin_M__0__PC)
-#define Pin_Franklin_M_0_DR		(Pin_Franklin_M__0__DR)
-#define Pin_Franklin_M_0_SHIFT	(Pin_Franklin_M__0__SHIFT)
+#define Pin_BandSel2_0		(Pin_BandSel2__0__PC)
+#define Pin_BandSel2_0_PS		(Pin_BandSel2__0__PS)
+#define Pin_BandSel2_0_PC		(Pin_BandSel2__0__PC)
+#define Pin_BandSel2_0_DR		(Pin_BandSel2__0__DR)
+#define Pin_BandSel2_0_SHIFT	(Pin_BandSel2__0__SHIFT)
 
 
-#endif /* End Pins Pin_Franklin_M_ALIASES_H */
+#endif /* End Pins Pin_BandSel2_ALIASES_H */
 
 
 /* [] END OF FILE */

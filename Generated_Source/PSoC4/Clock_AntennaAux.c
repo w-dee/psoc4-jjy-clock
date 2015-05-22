@@ -1,5 +1,5 @@
 /*******************************************************************************
-* File Name: Clock_5M.c
+* File Name: Clock_AntennaAux.c
 * Version 2.20
 *
 *  Description:
@@ -17,12 +17,12 @@
 *******************************************************************************/
 
 #include <cydevice_trm.h>
-#include "Clock_5M.h"
+#include "Clock_AntennaAux.h"
 
 #if defined CYREG_PERI_DIV_CMD
 
 /*******************************************************************************
-* Function Name: Clock_5M_StartEx
+* Function Name: Clock_AntennaAux_StartEx
 ********************************************************************************
 *
 * Summary:
@@ -36,24 +36,24 @@
 *  None
 *
 *******************************************************************************/
-void Clock_5M_StartEx(uint32 alignClkDiv)
+void Clock_AntennaAux_StartEx(uint32 alignClkDiv)
 {
     /* Make sure any previous start command has finished. */
-    while((Clock_5M_CMD_REG & Clock_5M_CMD_ENABLE_MASK) != 0u)
+    while((Clock_AntennaAux_CMD_REG & Clock_AntennaAux_CMD_ENABLE_MASK) != 0u)
     {
     }
     
     /* Specify the target divider and it's alignment divider, and enable. */
-    Clock_5M_CMD_REG =
-        ((uint32)Clock_5M__DIV_ID << Clock_5M_CMD_DIV_SHIFT)|
-        (alignClkDiv << Clock_5M_CMD_PA_DIV_SHIFT) |
-        (uint32)Clock_5M_CMD_ENABLE_MASK;
+    Clock_AntennaAux_CMD_REG =
+        ((uint32)Clock_AntennaAux__DIV_ID << Clock_AntennaAux_CMD_DIV_SHIFT)|
+        (alignClkDiv << Clock_AntennaAux_CMD_PA_DIV_SHIFT) |
+        (uint32)Clock_AntennaAux_CMD_ENABLE_MASK;
 }
 
 #else
 
 /*******************************************************************************
-* Function Name: Clock_5M_Start
+* Function Name: Clock_AntennaAux_Start
 ********************************************************************************
 *
 * Summary:
@@ -67,17 +67,17 @@ void Clock_5M_StartEx(uint32 alignClkDiv)
 *
 *******************************************************************************/
 
-void Clock_5M_Start(void)
+void Clock_AntennaAux_Start(void)
 {
     /* Set the bit to enable the clock. */
-    Clock_5M_ENABLE_REG |= Clock_5M__ENABLE_MASK;
+    Clock_AntennaAux_ENABLE_REG |= Clock_AntennaAux__ENABLE_MASK;
 }
 
 #endif /* CYREG_PERI_DIV_CMD */
 
 
 /*******************************************************************************
-* Function Name: Clock_5M_Stop
+* Function Name: Clock_AntennaAux_Stop
 ********************************************************************************
 *
 * Summary:
@@ -92,31 +92,31 @@ void Clock_5M_Start(void)
 *  None
 *
 *******************************************************************************/
-void Clock_5M_Stop(void)
+void Clock_AntennaAux_Stop(void)
 {
 #if defined CYREG_PERI_DIV_CMD
 
     /* Make sure any previous start command has finished. */
-    while((Clock_5M_CMD_REG & Clock_5M_CMD_ENABLE_MASK) != 0u)
+    while((Clock_AntennaAux_CMD_REG & Clock_AntennaAux_CMD_ENABLE_MASK) != 0u)
     {
     }
     
     /* Specify the target divider and it's alignment divider, and disable. */
-    Clock_5M_CMD_REG =
-        ((uint32)Clock_5M__DIV_ID << Clock_5M_CMD_DIV_SHIFT)|
-        ((uint32)Clock_5M_CMD_DISABLE_MASK);
+    Clock_AntennaAux_CMD_REG =
+        ((uint32)Clock_AntennaAux__DIV_ID << Clock_AntennaAux_CMD_DIV_SHIFT)|
+        ((uint32)Clock_AntennaAux_CMD_DISABLE_MASK);
 
 #else
 
     /* Clear the bit to disable the clock. */
-    Clock_5M_ENABLE_REG &= (uint32)(~Clock_5M__ENABLE_MASK);
+    Clock_AntennaAux_ENABLE_REG &= (uint32)(~Clock_AntennaAux__ENABLE_MASK);
     
 #endif /* CYREG_PERI_DIV_CMD */
 }
 
 
 /*******************************************************************************
-* Function Name: Clock_5M_SetFractionalDividerRegister
+* Function Name: Clock_AntennaAux_SetFractionalDividerRegister
 ********************************************************************************
 *
 * Summary:
@@ -131,35 +131,35 @@ void Clock_5M_Stop(void)
 *  None
 *
 *******************************************************************************/
-void Clock_5M_SetFractionalDividerRegister(uint16 clkDivider, uint8 clkFractional)
+void Clock_AntennaAux_SetFractionalDividerRegister(uint16 clkDivider, uint8 clkFractional)
 {
     uint32 maskVal;
     uint32 regVal;
     
-#if defined (Clock_5M__FRAC_MASK) || defined (CYREG_PERI_DIV_CMD)
+#if defined (Clock_AntennaAux__FRAC_MASK) || defined (CYREG_PERI_DIV_CMD)
     
 	/* get all but divider bits */
-    maskVal = Clock_5M_DIV_REG & 
-                    (uint32)(~(uint32)(Clock_5M_DIV_INT_MASK | Clock_5M_DIV_FRAC_MASK)); 
+    maskVal = Clock_AntennaAux_DIV_REG & 
+                    (uint32)(~(uint32)(Clock_AntennaAux_DIV_INT_MASK | Clock_AntennaAux_DIV_FRAC_MASK)); 
 	/* combine mask and new divider vals into 32-bit value */
     regVal = maskVal |
-        ((uint32)((uint32)clkDivider <<  Clock_5M_DIV_INT_SHIFT) & Clock_5M_DIV_INT_MASK) |
-        ((uint32)((uint32)clkFractional << Clock_5M_DIV_FRAC_SHIFT) & Clock_5M_DIV_FRAC_MASK);
+        ((uint32)((uint32)clkDivider <<  Clock_AntennaAux_DIV_INT_SHIFT) & Clock_AntennaAux_DIV_INT_MASK) |
+        ((uint32)((uint32)clkFractional << Clock_AntennaAux_DIV_FRAC_SHIFT) & Clock_AntennaAux_DIV_FRAC_MASK);
     
 #else
     /* get all but integer divider bits */
-    maskVal = Clock_5M_DIV_REG & (uint32)(~(uint32)Clock_5M__DIVIDER_MASK);
+    maskVal = Clock_AntennaAux_DIV_REG & (uint32)(~(uint32)Clock_AntennaAux__DIVIDER_MASK);
     /* combine mask and new divider val into 32-bit value */
     regVal = clkDivider | maskVal;
     
-#endif /* Clock_5M__FRAC_MASK || CYREG_PERI_DIV_CMD */
+#endif /* Clock_AntennaAux__FRAC_MASK || CYREG_PERI_DIV_CMD */
 
-    Clock_5M_DIV_REG = regVal;
+    Clock_AntennaAux_DIV_REG = regVal;
 }
 
 
 /*******************************************************************************
-* Function Name: Clock_5M_GetDividerRegister
+* Function Name: Clock_AntennaAux_GetDividerRegister
 ********************************************************************************
 *
 * Summary:
@@ -173,15 +173,15 @@ void Clock_5M_SetFractionalDividerRegister(uint16 clkDivider, uint8 clkFractiona
 *  divide by 2, the return value will be 1.
 *
 *******************************************************************************/
-uint16 Clock_5M_GetDividerRegister(void)
+uint16 Clock_AntennaAux_GetDividerRegister(void)
 {
-    return (uint16)((Clock_5M_DIV_REG & Clock_5M_DIV_INT_MASK)
-        >> Clock_5M_DIV_INT_SHIFT);
+    return (uint16)((Clock_AntennaAux_DIV_REG & Clock_AntennaAux_DIV_INT_MASK)
+        >> Clock_AntennaAux_DIV_INT_SHIFT);
 }
 
 
 /*******************************************************************************
-* Function Name: Clock_5M_GetFractionalDividerRegister
+* Function Name: Clock_AntennaAux_GetFractionalDividerRegister
 ********************************************************************************
 *
 * Summary:
@@ -195,15 +195,15 @@ uint16 Clock_5M_GetDividerRegister(void)
 *  0 if the fractional divider is not in use.
 *
 *******************************************************************************/
-uint8 Clock_5M_GetFractionalDividerRegister(void)
+uint8 Clock_AntennaAux_GetFractionalDividerRegister(void)
 {
-#if defined (Clock_5M__FRAC_MASK)
+#if defined (Clock_AntennaAux__FRAC_MASK)
     /* return fractional divider bits */
-    return (uint8)((Clock_5M_DIV_REG & Clock_5M_DIV_FRAC_MASK)
-        >> Clock_5M_DIV_FRAC_SHIFT);
+    return (uint8)((Clock_AntennaAux_DIV_REG & Clock_AntennaAux_DIV_FRAC_MASK)
+        >> Clock_AntennaAux_DIV_FRAC_SHIFT);
 #else
     return 0u;
-#endif /* Clock_5M__FRAC_MASK */
+#endif /* Clock_AntennaAux__FRAC_MASK */
 }
 
 

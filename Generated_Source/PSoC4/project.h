@@ -19,8 +19,8 @@
 #include <cyfitter.h>
 #include <cydisabledsheets.h>
 #include <Bootloadable.h>
-#include <Pin_MixClockOut.h>
-#include <Pin_MixClockOut_aliases.h>
+#include <Pin_AntennaAuxOut.h>
+#include <Pin_AntennaAuxOut_aliases.h>
 #include <Pin_Opamp2P.h>
 #include <Pin_Opamp2P_aliases.h>
 #include <Pin_Opamp2Out.h>
@@ -37,6 +37,8 @@
 #include <AMux_Gain.h>
 #include <Opamp_2.h>
 #include <Clock_12M.h>
+#include <Pin_PWM_VRef.h>
+#include <Pin_PWM_VRef_aliases.h>
 #include <Clock_MIX.h>
 #include <Clock_ADC.h>
 #include <UART.h>
@@ -61,15 +63,11 @@
 #include <Pin_ADCin_JJY_aliases.h>
 #include <Pin_Opamp1M.h>
 #include <Pin_Opamp1M_aliases.h>
-#include <Pin_JJYSim.h>
-#include <Pin_JJYSim_aliases.h>
-#include <Pin_PWM_VRef.h>
-#include <Pin_PWM_VRef_aliases.h>
 #include <Pin_Opamp1P.h>
 #include <Pin_Opamp1P_aliases.h>
 #include <Pin_Opamp1Out.h>
 #include <Pin_Opamp1Out_aliases.h>
-#include <Control_Reg_JJYSim.h>
+#include <Clock_AntennaAux.h>
 #include <PWM_Tune.h>
 #include <Pin_TunePWMOut.h>
 #include <Pin_TunePWMOut_aliases.h>

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* File Name: Pin_MixClockOut.c  
+* File Name: Pin_BandSel2.c  
 * Version 2.10
 *
 * Description:
@@ -15,18 +15,18 @@
 *******************************************************************************/
 
 #include "cytypes.h"
-#include "Pin_MixClockOut.h"
+#include "Pin_BandSel2.h"
 
 #define SetP4PinDriveMode(shift, mode)  \
     do { \
-        Pin_MixClockOut_PC =   (Pin_MixClockOut_PC & \
-                                (uint32)(~(uint32)(Pin_MixClockOut_DRIVE_MODE_IND_MASK << (Pin_MixClockOut_DRIVE_MODE_BITS * (shift))))) | \
-                                (uint32)((uint32)(mode) << (Pin_MixClockOut_DRIVE_MODE_BITS * (shift))); \
+        Pin_BandSel2_PC =   (Pin_BandSel2_PC & \
+                                (uint32)(~(uint32)(Pin_BandSel2_DRIVE_MODE_IND_MASK << (Pin_BandSel2_DRIVE_MODE_BITS * (shift))))) | \
+                                (uint32)((uint32)(mode) << (Pin_BandSel2_DRIVE_MODE_BITS * (shift))); \
     } while (0)
 
 
 /*******************************************************************************
-* Function Name: Pin_MixClockOut_Write
+* Function Name: Pin_BandSel2_Write
 ********************************************************************************
 *
 * Summary:
@@ -39,16 +39,16 @@
 *  None 
 *  
 *******************************************************************************/
-void Pin_MixClockOut_Write(uint8 value) 
+void Pin_BandSel2_Write(uint8 value) 
 {
-    uint8 drVal = (uint8)(Pin_MixClockOut_DR & (uint8)(~Pin_MixClockOut_MASK));
-    drVal = (drVal | ((uint8)(value << Pin_MixClockOut_SHIFT) & Pin_MixClockOut_MASK));
-    Pin_MixClockOut_DR = (uint32)drVal;
+    uint8 drVal = (uint8)(Pin_BandSel2_DR & (uint8)(~Pin_BandSel2_MASK));
+    drVal = (drVal | ((uint8)(value << Pin_BandSel2_SHIFT) & Pin_BandSel2_MASK));
+    Pin_BandSel2_DR = (uint32)drVal;
 }
 
 
 /*******************************************************************************
-* Function Name: Pin_MixClockOut_SetDriveMode
+* Function Name: Pin_BandSel2_SetDriveMode
 ********************************************************************************
 *
 * Summary:
@@ -57,27 +57,27 @@ void Pin_MixClockOut_Write(uint8 value)
 * Parameters:  
 *  mode:  Change the pins to one of the following drive modes.
 *
-*  Pin_MixClockOut_DM_STRONG     Strong Drive 
-*  Pin_MixClockOut_DM_OD_HI      Open Drain, Drives High 
-*  Pin_MixClockOut_DM_OD_LO      Open Drain, Drives Low 
-*  Pin_MixClockOut_DM_RES_UP     Resistive Pull Up 
-*  Pin_MixClockOut_DM_RES_DWN    Resistive Pull Down 
-*  Pin_MixClockOut_DM_RES_UPDWN  Resistive Pull Up/Down 
-*  Pin_MixClockOut_DM_DIG_HIZ    High Impedance Digital 
-*  Pin_MixClockOut_DM_ALG_HIZ    High Impedance Analog 
+*  Pin_BandSel2_DM_STRONG     Strong Drive 
+*  Pin_BandSel2_DM_OD_HI      Open Drain, Drives High 
+*  Pin_BandSel2_DM_OD_LO      Open Drain, Drives Low 
+*  Pin_BandSel2_DM_RES_UP     Resistive Pull Up 
+*  Pin_BandSel2_DM_RES_DWN    Resistive Pull Down 
+*  Pin_BandSel2_DM_RES_UPDWN  Resistive Pull Up/Down 
+*  Pin_BandSel2_DM_DIG_HIZ    High Impedance Digital 
+*  Pin_BandSel2_DM_ALG_HIZ    High Impedance Analog 
 *
 * Return: 
 *  None
 *
 *******************************************************************************/
-void Pin_MixClockOut_SetDriveMode(uint8 mode) 
+void Pin_BandSel2_SetDriveMode(uint8 mode) 
 {
-	SetP4PinDriveMode(Pin_MixClockOut__0__SHIFT, mode);
+	SetP4PinDriveMode(Pin_BandSel2__0__SHIFT, mode);
 }
 
 
 /*******************************************************************************
-* Function Name: Pin_MixClockOut_Read
+* Function Name: Pin_BandSel2_Read
 ********************************************************************************
 *
 * Summary:
@@ -91,17 +91,17 @@ void Pin_MixClockOut_SetDriveMode(uint8 mode)
 *  Returns the current value of the Digital Port as a right justified number
 *  
 * Note:
-*  Macro Pin_MixClockOut_ReadPS calls this function. 
+*  Macro Pin_BandSel2_ReadPS calls this function. 
 *  
 *******************************************************************************/
-uint8 Pin_MixClockOut_Read(void) 
+uint8 Pin_BandSel2_Read(void) 
 {
-    return (uint8)((Pin_MixClockOut_PS & Pin_MixClockOut_MASK) >> Pin_MixClockOut_SHIFT);
+    return (uint8)((Pin_BandSel2_PS & Pin_BandSel2_MASK) >> Pin_BandSel2_SHIFT);
 }
 
 
 /*******************************************************************************
-* Function Name: Pin_MixClockOut_ReadDataReg
+* Function Name: Pin_BandSel2_ReadDataReg
 ********************************************************************************
 *
 * Summary:
@@ -114,17 +114,17 @@ uint8 Pin_MixClockOut_Read(void)
 *  Returns the current value assigned to the Digital Port's data output register
 *  
 *******************************************************************************/
-uint8 Pin_MixClockOut_ReadDataReg(void) 
+uint8 Pin_BandSel2_ReadDataReg(void) 
 {
-    return (uint8)((Pin_MixClockOut_DR & Pin_MixClockOut_MASK) >> Pin_MixClockOut_SHIFT);
+    return (uint8)((Pin_BandSel2_DR & Pin_BandSel2_MASK) >> Pin_BandSel2_SHIFT);
 }
 
 
 /* If Interrupts Are Enabled for this Pins component */ 
-#if defined(Pin_MixClockOut_INTSTAT) 
+#if defined(Pin_BandSel2_INTSTAT) 
 
     /*******************************************************************************
-    * Function Name: Pin_MixClockOut_ClearInterrupt
+    * Function Name: Pin_BandSel2_ClearInterrupt
     ********************************************************************************
     *
     * Summary:
@@ -138,11 +138,11 @@ uint8 Pin_MixClockOut_ReadDataReg(void)
     *  Returns the value of the interrupt status register
     *  
     *******************************************************************************/
-    uint8 Pin_MixClockOut_ClearInterrupt(void) 
+    uint8 Pin_BandSel2_ClearInterrupt(void) 
     {
-		uint8 maskedStatus = (uint8)(Pin_MixClockOut_INTSTAT & Pin_MixClockOut_MASK);
-		Pin_MixClockOut_INTSTAT = maskedStatus;
-        return maskedStatus >> Pin_MixClockOut_SHIFT;
+		uint8 maskedStatus = (uint8)(Pin_BandSel2_INTSTAT & Pin_BandSel2_MASK);
+		Pin_BandSel2_INTSTAT = maskedStatus;
+        return maskedStatus >> Pin_BandSel2_SHIFT;
     }
 
 #endif /* If Interrupts Are Enabled for this Pins component */ 

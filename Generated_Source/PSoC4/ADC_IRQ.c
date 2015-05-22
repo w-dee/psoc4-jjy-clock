@@ -26,6 +26,7 @@
 *  Place your includes, defines and code here 
 ********************************************************************************/
 /* `#START ADC_IRQ_intc` */
+
 /* `#END` */
 
 extern cyisraddress CyRamVectors[CYINT_IRQ_BASE + CY_NUM_INTERRUPTS];
