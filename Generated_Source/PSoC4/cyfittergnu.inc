@@ -120,10 +120,10 @@
 
 /* ADC_intClock */
 .set ADC_intClock__DIVIDER_MASK, 0x0000FFFF
-.set ADC_intClock__ENABLE, CYREG_CLK_DIVIDER_B01
+.set ADC_intClock__ENABLE, CYREG_CLK_DIVIDER_C01
 .set ADC_intClock__ENABLE_MASK, 0x80000000
 .set ADC_intClock__MASK, 0x80000000
-.set ADC_intClock__REGISTER, CYREG_CLK_DIVIDER_B01
+.set ADC_intClock__REGISTER, CYREG_CLK_DIVIDER_C01
 
 /* ADC_IRQ */
 .set ADC_IRQ__INTC_CLR_EN_REG, CYREG_CM0_ICER
@@ -249,10 +249,10 @@
 
 /* UART_SCBCLK */
 .set UART_SCBCLK__DIVIDER_MASK, 0x0000FFFF
-.set UART_SCBCLK__ENABLE, CYREG_CLK_DIVIDER_C01
+.set UART_SCBCLK__ENABLE, CYREG_CLK_DIVIDER_A02
 .set UART_SCBCLK__ENABLE_MASK, 0x80000000
 .set UART_SCBCLK__MASK, 0x80000000
-.set UART_SCBCLK__REGISTER, CYREG_CLK_DIVIDER_C01
+.set UART_SCBCLK__REGISTER, CYREG_CLK_DIVIDER_A02
 
 /* UART_tx */
 .set UART_tx__0__DM__MASK, 0x38
@@ -484,17 +484,17 @@
 
 /* Clock_12M */
 .set Clock_12M__DIVIDER_MASK, 0x0000FFFF
-.set Clock_12M__ENABLE, CYREG_CLK_DIVIDER_A01
+.set Clock_12M__ENABLE, CYREG_CLK_DIVIDER_B01
 .set Clock_12M__ENABLE_MASK, 0x80000000
 .set Clock_12M__MASK, 0x80000000
-.set Clock_12M__REGISTER, CYREG_CLK_DIVIDER_A01
+.set Clock_12M__REGISTER, CYREG_CLK_DIVIDER_B01
 
 /* Clock_ADC */
 .set Clock_ADC__DIVIDER_MASK, 0x0000FFFF
-.set Clock_ADC__ENABLE, CYREG_CLK_DIVIDER_B02
+.set Clock_ADC__ENABLE, CYREG_CLK_DIVIDER_B00
 .set Clock_ADC__ENABLE_MASK, 0x80000000
 .set Clock_ADC__MASK, 0x80000000
-.set Clock_ADC__REGISTER, CYREG_CLK_DIVIDER_B02
+.set Clock_ADC__REGISTER, CYREG_CLK_DIVIDER_B00
 
 /* Clock_MIX */
 .set Clock_MIX__DIVIDER_MASK, 0x0000FFFF
@@ -570,7 +570,7 @@
 .set Pin_Gain1__0__MASK, 0x08
 .set Pin_Gain1__0__OUT_SEL, CYREG_UDB_PA0_CFG10
 .set Pin_Gain1__0__OUT_SEL_SHIFT, 6
-.set Pin_Gain1__0__OUT_SEL_VAL, 2
+.set Pin_Gain1__0__OUT_SEL_VAL, 0
 .set Pin_Gain1__0__PA__CFG0, CYREG_UDB_PA0_CFG0
 .set Pin_Gain1__0__PA__CFG1, CYREG_UDB_PA0_CFG1
 .set Pin_Gain1__0__PA__CFG10, CYREG_UDB_PA0_CFG10
@@ -628,7 +628,7 @@
 .set Pin_Gain2__0__MASK, 0x04
 .set Pin_Gain2__0__OUT_SEL, CYREG_UDB_PA0_CFG10
 .set Pin_Gain2__0__OUT_SEL_SHIFT, 4
-.set Pin_Gain2__0__OUT_SEL_VAL, 2
+.set Pin_Gain2__0__OUT_SEL_VAL, 0
 .set Pin_Gain2__0__PA__CFG0, CYREG_UDB_PA0_CFG0
 .set Pin_Gain2__0__PA__CFG1, CYREG_UDB_PA0_CFG1
 .set Pin_Gain2__0__PA__CFG10, CYREG_UDB_PA0_CFG10
@@ -744,7 +744,7 @@
 .set Pin_Opamp1M__0__MASK, 0x02
 .set Pin_Opamp1M__0__OUT_SEL, CYREG_UDB_PA1_CFG10
 .set Pin_Opamp1M__0__OUT_SEL_SHIFT, 2
-.set Pin_Opamp1M__0__OUT_SEL_VAL, 1
+.set Pin_Opamp1M__0__OUT_SEL_VAL, 2
 .set Pin_Opamp1M__0__PA__CFG0, CYREG_UDB_PA1_CFG0
 .set Pin_Opamp1M__0__PA__CFG1, CYREG_UDB_PA1_CFG1
 .set Pin_Opamp1M__0__PA__CFG10, CYREG_UDB_PA1_CFG10
@@ -802,7 +802,7 @@
 .set Pin_Opamp1P__0__MASK, 0x01
 .set Pin_Opamp1P__0__OUT_SEL, CYREG_UDB_PA1_CFG10
 .set Pin_Opamp1P__0__OUT_SEL_SHIFT, 0
-.set Pin_Opamp1P__0__OUT_SEL_VAL, 2
+.set Pin_Opamp1P__0__OUT_SEL_VAL, 0
 .set Pin_Opamp1P__0__PA__CFG0, CYREG_UDB_PA1_CFG0
 .set Pin_Opamp1P__0__PA__CFG1, CYREG_UDB_PA1_CFG1
 .set Pin_Opamp1P__0__PA__CFG10, CYREG_UDB_PA1_CFG10
@@ -1079,10 +1079,10 @@
 
 /* Clock_PWMTune */
 .set Clock_PWMTune__DIVIDER_MASK, 0x0000FFFF
-.set Clock_PWMTune__ENABLE, CYREG_CLK_DIVIDER_B00
+.set Clock_PWMTune__ENABLE, CYREG_CLK_DIVIDER_C00
 .set Clock_PWMTune__ENABLE_MASK, 0x80000000
 .set Clock_PWMTune__MASK, 0x80000000
-.set Clock_PWMTune__REGISTER, CYREG_CLK_DIVIDER_B00
+.set Clock_PWMTune__REGISTER, CYREG_CLK_DIVIDER_C00
 
 /* Pin_ADCin_JJY */
 .set Pin_ADCin_JJY__0__DM__MASK, 0x07
@@ -1306,10 +1306,10 @@
 
 /* Clock_Franklin */
 .set Clock_Franklin__DIVIDER_MASK, 0x0000FFFF
-.set Clock_Franklin__ENABLE, CYREG_CLK_DIVIDER_C00
+.set Clock_Franklin__ENABLE, CYREG_CLK_DIVIDER_A01
 .set Clock_Franklin__ENABLE_MASK, 0x80000000
 .set Clock_Franklin__MASK, 0x80000000
-.set Clock_Franklin__REGISTER, CYREG_CLK_DIVIDER_C00
+.set Clock_Franklin__REGISTER, CYREG_CLK_DIVIDER_A01
 
 /* Pin_ADCin_Temp */
 .set Pin_ADCin_Temp__0__DM__MASK, 0x1C0
@@ -1378,7 +1378,7 @@
 .set Pin_FranklinFB__0__MASK, 0x08
 .set Pin_FranklinFB__0__OUT_SEL, CYREG_UDB_PA2_CFG10
 .set Pin_FranklinFB__0__OUT_SEL_SHIFT, 6
-.set Pin_FranklinFB__0__OUT_SEL_VAL, 2
+.set Pin_FranklinFB__0__OUT_SEL_VAL, 3
 .set Pin_FranklinFB__0__PA__CFG0, CYREG_UDB_PA2_CFG0
 .set Pin_FranklinFB__0__PA__CFG1, CYREG_UDB_PA2_CFG1
 .set Pin_FranklinFB__0__PA__CFG10, CYREG_UDB_PA2_CFG10
@@ -1528,10 +1528,10 @@
 
 /* Clock_AntennaAux */
 .set Clock_AntennaAux__DIVIDER_MASK, 0x0000FFFF
-.set Clock_AntennaAux__ENABLE, CYREG_CLK_DIVIDER_A02
+.set Clock_AntennaAux__ENABLE, CYREG_CLK_DIVIDER_B02
 .set Clock_AntennaAux__ENABLE_MASK, 0x80000000
 .set Clock_AntennaAux__MASK, 0x80000000
-.set Clock_AntennaAux__REGISTER, CYREG_CLK_DIVIDER_A02
+.set Clock_AntennaAux__REGISTER, CYREG_CLK_DIVIDER_B02
 
 /* Pin_AntennaAuxOut */
 .set Pin_AntennaAuxOut__0__DM__MASK, 0x38000

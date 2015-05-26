@@ -120,10 +120,10 @@
 
 /* ADC_intClock */
 #define ADC_intClock__DIVIDER_MASK 0x0000FFFFu
-#define ADC_intClock__ENABLE CYREG_CLK_DIVIDER_B01
+#define ADC_intClock__ENABLE CYREG_CLK_DIVIDER_C01
 #define ADC_intClock__ENABLE_MASK 0x80000000u
 #define ADC_intClock__MASK 0x80000000u
-#define ADC_intClock__REGISTER CYREG_CLK_DIVIDER_B01
+#define ADC_intClock__REGISTER CYREG_CLK_DIVIDER_C01
 
 /* ADC_IRQ */
 #define ADC_IRQ__INTC_CLR_EN_REG CYREG_CM0_ICER
@@ -249,10 +249,10 @@
 
 /* UART_SCBCLK */
 #define UART_SCBCLK__DIVIDER_MASK 0x0000FFFFu
-#define UART_SCBCLK__ENABLE CYREG_CLK_DIVIDER_C01
+#define UART_SCBCLK__ENABLE CYREG_CLK_DIVIDER_A02
 #define UART_SCBCLK__ENABLE_MASK 0x80000000u
 #define UART_SCBCLK__MASK 0x80000000u
-#define UART_SCBCLK__REGISTER CYREG_CLK_DIVIDER_C01
+#define UART_SCBCLK__REGISTER CYREG_CLK_DIVIDER_A02
 
 /* UART_tx */
 #define UART_tx__0__DM__MASK 0x38u
@@ -484,17 +484,17 @@
 
 /* Clock_12M */
 #define Clock_12M__DIVIDER_MASK 0x0000FFFFu
-#define Clock_12M__ENABLE CYREG_CLK_DIVIDER_A01
+#define Clock_12M__ENABLE CYREG_CLK_DIVIDER_B01
 #define Clock_12M__ENABLE_MASK 0x80000000u
 #define Clock_12M__MASK 0x80000000u
-#define Clock_12M__REGISTER CYREG_CLK_DIVIDER_A01
+#define Clock_12M__REGISTER CYREG_CLK_DIVIDER_B01
 
 /* Clock_ADC */
 #define Clock_ADC__DIVIDER_MASK 0x0000FFFFu
-#define Clock_ADC__ENABLE CYREG_CLK_DIVIDER_B02
+#define Clock_ADC__ENABLE CYREG_CLK_DIVIDER_B00
 #define Clock_ADC__ENABLE_MASK 0x80000000u
 #define Clock_ADC__MASK 0x80000000u
-#define Clock_ADC__REGISTER CYREG_CLK_DIVIDER_B02
+#define Clock_ADC__REGISTER CYREG_CLK_DIVIDER_B00
 
 /* Clock_MIX */
 #define Clock_MIX__DIVIDER_MASK 0x0000FFFFu
@@ -570,7 +570,7 @@
 #define Pin_Gain1__0__MASK 0x08u
 #define Pin_Gain1__0__OUT_SEL CYREG_UDB_PA0_CFG10
 #define Pin_Gain1__0__OUT_SEL_SHIFT 6u
-#define Pin_Gain1__0__OUT_SEL_VAL 2u
+#define Pin_Gain1__0__OUT_SEL_VAL 0u
 #define Pin_Gain1__0__PA__CFG0 CYREG_UDB_PA0_CFG0
 #define Pin_Gain1__0__PA__CFG1 CYREG_UDB_PA0_CFG1
 #define Pin_Gain1__0__PA__CFG10 CYREG_UDB_PA0_CFG10
@@ -628,7 +628,7 @@
 #define Pin_Gain2__0__MASK 0x04u
 #define Pin_Gain2__0__OUT_SEL CYREG_UDB_PA0_CFG10
 #define Pin_Gain2__0__OUT_SEL_SHIFT 4u
-#define Pin_Gain2__0__OUT_SEL_VAL 2u
+#define Pin_Gain2__0__OUT_SEL_VAL 0u
 #define Pin_Gain2__0__PA__CFG0 CYREG_UDB_PA0_CFG0
 #define Pin_Gain2__0__PA__CFG1 CYREG_UDB_PA0_CFG1
 #define Pin_Gain2__0__PA__CFG10 CYREG_UDB_PA0_CFG10
@@ -744,7 +744,7 @@
 #define Pin_Opamp1M__0__MASK 0x02u
 #define Pin_Opamp1M__0__OUT_SEL CYREG_UDB_PA1_CFG10
 #define Pin_Opamp1M__0__OUT_SEL_SHIFT 2u
-#define Pin_Opamp1M__0__OUT_SEL_VAL 1u
+#define Pin_Opamp1M__0__OUT_SEL_VAL 2u
 #define Pin_Opamp1M__0__PA__CFG0 CYREG_UDB_PA1_CFG0
 #define Pin_Opamp1M__0__PA__CFG1 CYREG_UDB_PA1_CFG1
 #define Pin_Opamp1M__0__PA__CFG10 CYREG_UDB_PA1_CFG10
@@ -802,7 +802,7 @@
 #define Pin_Opamp1P__0__MASK 0x01u
 #define Pin_Opamp1P__0__OUT_SEL CYREG_UDB_PA1_CFG10
 #define Pin_Opamp1P__0__OUT_SEL_SHIFT 0u
-#define Pin_Opamp1P__0__OUT_SEL_VAL 2u
+#define Pin_Opamp1P__0__OUT_SEL_VAL 0u
 #define Pin_Opamp1P__0__PA__CFG0 CYREG_UDB_PA1_CFG0
 #define Pin_Opamp1P__0__PA__CFG1 CYREG_UDB_PA1_CFG1
 #define Pin_Opamp1P__0__PA__CFG10 CYREG_UDB_PA1_CFG10
@@ -1079,10 +1079,10 @@
 
 /* Clock_PWMTune */
 #define Clock_PWMTune__DIVIDER_MASK 0x0000FFFFu
-#define Clock_PWMTune__ENABLE CYREG_CLK_DIVIDER_B00
+#define Clock_PWMTune__ENABLE CYREG_CLK_DIVIDER_C00
 #define Clock_PWMTune__ENABLE_MASK 0x80000000u
 #define Clock_PWMTune__MASK 0x80000000u
-#define Clock_PWMTune__REGISTER CYREG_CLK_DIVIDER_B00
+#define Clock_PWMTune__REGISTER CYREG_CLK_DIVIDER_C00
 
 /* Pin_ADCin_JJY */
 #define Pin_ADCin_JJY__0__DM__MASK 0x07u
@@ -1306,10 +1306,10 @@
 
 /* Clock_Franklin */
 #define Clock_Franklin__DIVIDER_MASK 0x0000FFFFu
-#define Clock_Franklin__ENABLE CYREG_CLK_DIVIDER_C00
+#define Clock_Franklin__ENABLE CYREG_CLK_DIVIDER_A01
 #define Clock_Franklin__ENABLE_MASK 0x80000000u
 #define Clock_Franklin__MASK 0x80000000u
-#define Clock_Franklin__REGISTER CYREG_CLK_DIVIDER_C00
+#define Clock_Franklin__REGISTER CYREG_CLK_DIVIDER_A01
 
 /* Pin_ADCin_Temp */
 #define Pin_ADCin_Temp__0__DM__MASK 0x1C0u
@@ -1378,7 +1378,7 @@
 #define Pin_FranklinFB__0__MASK 0x08u
 #define Pin_FranklinFB__0__OUT_SEL CYREG_UDB_PA2_CFG10
 #define Pin_FranklinFB__0__OUT_SEL_SHIFT 6u
-#define Pin_FranklinFB__0__OUT_SEL_VAL 2u
+#define Pin_FranklinFB__0__OUT_SEL_VAL 3u
 #define Pin_FranklinFB__0__PA__CFG0 CYREG_UDB_PA2_CFG0
 #define Pin_FranklinFB__0__PA__CFG1 CYREG_UDB_PA2_CFG1
 #define Pin_FranklinFB__0__PA__CFG10 CYREG_UDB_PA2_CFG10
@@ -1528,10 +1528,10 @@
 
 /* Clock_AntennaAux */
 #define Clock_AntennaAux__DIVIDER_MASK 0x0000FFFFu
-#define Clock_AntennaAux__ENABLE CYREG_CLK_DIVIDER_A02
+#define Clock_AntennaAux__ENABLE CYREG_CLK_DIVIDER_B02
 #define Clock_AntennaAux__ENABLE_MASK 0x80000000u
 #define Clock_AntennaAux__MASK 0x80000000u
-#define Clock_AntennaAux__REGISTER CYREG_CLK_DIVIDER_A02
+#define Clock_AntennaAux__REGISTER CYREG_CLK_DIVIDER_B02
 
 /* Pin_AntennaAuxOut */
 #define Pin_AntennaAuxOut__0__DM__MASK 0x38000u

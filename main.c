@@ -53,7 +53,7 @@
 #include <project.h>
 #include <string.h>
 
-#define CALIBRATION
+//#define CALIBRATION
 //#define SAMPLING
 //#define JJYSIM
 
@@ -149,13 +149,13 @@ void uart_send_dec32(int32_t val)
 	uart_send_udec32(val);
 }
 
-#define ADC_CLOCK_DIVIDER 1250
+#define ADC_CLOCK_DIVIDER 5923
 
 
-#define SHIFT_FREQ (44480000.0 / (602) / 2)
+#define SHIFT_FREQ (48000000.0 / (602) / 2)
 #define INPUT_FREQ (40000.0 - SHIFT_FREQ)
 
-#define ADC_INTERRUPT_FREQ (5000000.0 / ADC_CLOCK_DIVIDER) 
+#define ADC_INTERRUPT_FREQ (48000000.0/ ADC_CLOCK_DIVIDER/2)
 
 static volatile uint16_t p_i = 0;
 
@@ -171,11 +171,11 @@ static volatile	uint32_t th_u = 0, th_l = 0;
 static volatile	uint32_t threshold = 0;
 
 
-#if ADC_CLOCK_DIVIDER == 1250
+#if ADC_CLOCK_DIVIDER == 5923
 
-static int32_t b = 31804;
+static int32_t b = 31796;
 	
-static int32_t c = 16128;
+static int32_t c = 16127;
 #else
     #error unknown ADC_CLOCK_DIVIDER value
 #endif
@@ -906,7 +906,7 @@ int main()
 
     Opamp_2_Start();
 
-
+    Clock_ADC_Start();
 
     AMux_Gain_Connect(1);
    
@@ -973,65 +973,97 @@ uart_send_udec32(irq_count);
 uart_print("\r\n\r\n");
 
     uint32_t next_tick = system_time + 20;
+#ifdef JJYSIM
+	Clock_AntennaAux_SetDividerValue(CLOCK_FREQ / 40000ul / 2); // 40kHz out
     for(;;)
     {
-#ifdef JJYSIM
+
 
 	for(int n = 0; n < 10; n++)
 	{
-		int bits;
+		int bits = 0;
+		uart_print("\r\n");
+		uart_print("\r\n output_value:");
+		uart_send_dec32(output_value);
+		uart_print("\r\n threshold   :");
+		uart_send_dec32(threshold);
+		uart_print("\r\n th_l        :");
+		uart_send_dec32(th_l);
+		uart_print("\r\n th_u        :");
+		uart_send_dec32(th_u);
+		uart_print("\r\n max_adc     :");
+		uart_send_dec32(max_adc);
+		uart_print("\r\n");
 		switch(n)
 		{
-			case 0: bits=0b11000000; break;
-			case 1: bits=0b11110000; break;
-			case 2: bits=0b11111100; break;
-			case 3: bits=0b11111100; break;
-			case 4: bits=0b11111100; break;
-			case 5: bits=0b11110000; break;
-			case 6: bits=0b11111100; break;
-			case 7: bits=0b11110000; break;
-			case 8: bits=0b11111100; break;
-			case 9: bits=0b11110000; break;
+			case 0: bits=0b11000000; uart_print("sim: 0b11000000\r\n"); break;
+			case 1: bits=0b11110000; uart_print("sim: 0b11110000\r\n"); break;
+			case 2: bits=0b11111100; uart_print("sim: 0b11111100\r\n"); break;
+			case 3: bits=0b11111100; uart_print("sim: 0b11111100\r\n"); break;
+			case 4: bits=0b11111100; uart_print("sim: 0b11111100\r\n"); break;
+			case 5: bits=0b11110000; uart_print("sim: 0b11110000\r\n"); break;
+			case 6: bits=0b11111100; uart_print("sim: 0b11111100\r\n"); break;
+			case 7: bits=0b11110000; uart_print("sim: 0b11110000\r\n"); break;
+			case 8: bits=0b11111100; uart_print("sim: 0b11111100\r\n"); break;
+			case 9: bits=0b11110000; uart_print("sim: 0b11110000\r\n"); break;
 		}
+        uart_print("       ");
 
 		for(int p = 0; p < 8; p++)
 		{
 			while(system_time < next_tick) /**/;
 			next_tick += 125;
 			int one_or_zero = (bits & 0b10000000) ? 1: 0;
-			Control_Reg_JJYSim_Write(one_or_zero);
+			if(one_or_zero)
+				Pin_AntennaAuxOut_SetDriveMode(Pin_AntennaAuxOut_DM_STRONG);
+			else
+				Pin_AntennaAuxOut_SetDriveMode(Pin_AntennaAuxOut_DM_ALG_HIZ);
 			bits <<=1;
+
+        if(timecode)
+            uart_print("1");
+        else
+                uart_print("0");
+
 		}
+	}
+    }
 	
 #endif
 
 #ifndef SAMPLING
 
     
-    
-    for(int i = 0; i < 20 ; i++)
+    for(int n = 0;;)
     {
-        while(system_time < next_tick) /**/;
-        next_tick += 50;
-        if(timecode)
-            uart_print("1");
-        else
-                uart_print("0");
-    }
-	uart_print("\r\n");
-	uart_print("\r\n output_value:");
-	uart_send_dec32(output_value);
-	uart_print("\r\n threshold   :");
-	uart_send_dec32(threshold);
-	uart_print("\r\n th_l        :");
-	uart_send_dec32(th_l);
-	uart_print("\r\n th_u        :");
-	uart_send_dec32(th_u);
-	uart_print("\r\n max_adc     :");
-	uart_send_dec32(max_adc);
-	uart_print("\r\n");
-#endif
+		for(int i = 0; i < 20 ; i++)
+		{
+		    while(system_time < next_tick) /**/;
+		    next_tick += 50;
+		    if(timecode)
+		        uart_print("1");
+		    else
+		            uart_print("0");
+		}
+		uart_print("\r\n");
+        if(++n == 20)
+        {
+            n=0;
+    		uart_print("\r\n output_value:");
+    		uart_send_dec32(output_value);
+    		uart_print("\r\n threshold   :");
+    		uart_send_dec32(threshold);
+    		uart_print("\r\n th_l        :");
+    		uart_send_dec32(th_l);
+    		uart_print("\r\n th_u        :");
+    		uart_send_dec32(th_u);
+    		uart_print("\r\n max_adc     :");
+    		uart_send_dec32(max_adc);
+    		uart_print("\r\n");
+        }
 	}
+
+#endif
 
 
 

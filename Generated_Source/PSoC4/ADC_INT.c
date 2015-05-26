@@ -24,7 +24,7 @@
 *   #START and #END tags
 ******************************************************************************/
 /* `#START ADC_SYS_VAR`  */
-
+extern void     adc_interrupt();
 /* `#END`  */
 
 #if(ADC_IRQ_REMOVE == 0u)
@@ -59,7 +59,7 @@
         *  - add user ISR code between the following #START and #END tags
         *************************************************************************/
         /* `#START MAIN_ADC_ISR`  */
-
+    	if(intr_status & ADC_EOS_MASK) adc_interrupt();
         /* `#END`  */
 
         /* Clear handled interrupt */
