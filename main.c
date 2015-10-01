@@ -53,7 +53,7 @@
 #include <project.h>
 #include <string.h>
 
-//#define CALIBRATION
+#define CALIBRATION
 //#define SAMPLING
 //#define JJYSIM
 
@@ -272,7 +272,7 @@ uart_putc((v >> 8) & 0xff);
 #include <project.h>
 #include <string.h>
 
-extern volatile uint32_t system_time;
+extern volatile uint32 system_time;
 
 /**
  * epoch からの経過ミリ秒数を得る
@@ -292,33 +292,19 @@ static inline int is_elapsed(uint32_t epoch, int32_t timeout)
 	return get_elapsed_time(epoch) >= (int32_t)timeout;
 }
 
-#define AMux_CapSW_FRANKLIN 0 //!< Franklin_FB mux ch
-#define AMux_CapSW_BAND40K_1 1 //!< 40k band capacitor mux 1
-#define AMux_CapSW_BAND40K_2 2 //!< 40k band capacitor mux 2
+#define AMux_CapSW_BAND40K_1 0 //!< 40k band capacitor mux 1
+#define AMux_CapSW_BAND40K_2 1 //!< 40k band capacitor mux 2
 
 
 
 
 /**
  * システムを、キャリブレーションに適した設定にする
- * @param enable_franklin_fb フランクリン発振器を有効にするかどうか
  */
-static void init_calibration(int enable_franklin_fb)
+static void init_calibration()
 {
 	// enable_franklin_fbが有効の場合は、AMux_CapSWを設定する
     AMux_CapSw_Start();
-	if(enable_franklin_fb)
-	{
-		AMux_CapSw_Connect(AMux_CapSW_FRANKLIN); // 1=Franklin_FB
-	}
-
-	// enable_franklin_fbが有効の場合は、コンパレーター LPComp_Franklinと
-	// TCPWM Timer_Franklinをスタートする
-	if(enable_franklin_fb)
-	{
-		LPComp_Franklin_Start();
-		Timer_Franklin_Start();
-	}
 }
 
 
@@ -330,15 +316,6 @@ static void uninit_calibration()
 	// Pin_AntennaAuxOutをHigh impedance analogに変更し、出力
 	// をオフにする
 	Pin_AntennaAuxOut_SetDriveMode(Pin_AntennaAuxOut_DM_ALG_HIZ);
-
-
-	// AMux_CapSWのうち、フランクリン発振器を有効にするためのラインを切断する
-	AMux_CapSw_Disconnect(AMux_CapSW_FRANKLIN); // 1=Franklin_FB
-	
-	// コンパレーター LPComp_Franklinと
-	// TCPWM Timer_Franklinを停止する
-	LPComp_Franklin_Stop();
-	Timer_Franklin_Stop();
 }
 
 #define TUNE_MAX 1024
@@ -440,30 +417,6 @@ static void uninit_tune_adc()
 }
 
 
-
-
-
-/**
- * フランクリン発振器の発振周波数を得る
- */
-static unsigned int get_franklin_frequency()
-{
-	int high16 = 0;
-	uint16_t prev_cnt = 0;
-
-	for(uint32_t s = system_time; s == system_time; ) /**/;
-
-	Timer_Franklin_WriteCounter(0);
-
-	// wait for 1sec and let counter counting the comparator
-	for(uint32_t s = system_time; (int32_t)(system_time - s) < 1000; )
-	{
-			uint16_t now_cnt  = Timer_Franklin_ReadCounter();
-	        if(now_cnt < prev_cnt) high16++; // check for roundup
-			prev_cnt = now_cnt;
-	}
-	return Timer_Franklin_ReadCounter() + (high16 << 16);
-}
 
 
 /**
@@ -801,7 +754,7 @@ static void tuning_handler()
 	switch(tuning_state.state)
 	{
 	case TUNE_STATE_INIT:  //!< 最初。各種ペリフェラルの初期化など
-		init_calibration(0);
+		init_calibration();
 		set_tuning_state(TUNE_STATE_40K);
 		set_tuning_substate(TUNE_SUBSTATE_TUNE_INIT);
 		break;
@@ -898,8 +851,6 @@ int main()
     
     ADC_Start();
 
-    AMux_Gain_Start();
-
 	AMux_CapSw_Start();
 	
     Opamp_1_Start();
@@ -908,12 +859,12 @@ int main()
 
     Clock_ADC_Start();
 
-    AMux_Gain_Connect(1);
-   
     ADC_IRQ_Enable();
 
     uninit_calibration();
-        
+
+	Mux_Conrtol_Reg_Write(0b01);
+	
     CyGlobalIntEnable; 
 
     UART_Start();
@@ -921,8 +872,9 @@ int main()
 	
 
 #ifdef CALIBRATION
+	init_tuning_state();
     init_tune_adc();
-    init_calibration(1);
+    init_calibration();
     #if 0
         set_calibrarion_parameters(0, 1023);
         for(;;)
