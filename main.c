@@ -305,6 +305,7 @@ static void init_calibration()
 {
 	// enable_franklin_fbが有効の場合は、AMux_CapSWを設定する
     AMux_CapSw_Start();
+	Clock_MIX_Disable(); // mix用クロックは停止
 }
 
 
@@ -316,6 +317,7 @@ static void uninit_calibration()
 	// Pin_AntennaAuxOutをHigh impedance analogに変更し、出力
 	// をオフにする
 	Pin_AntennaAuxOut_SetDriveMode(Pin_AntennaAuxOut_DM_ALG_HIZ);
+	Clock_MIX_Enable(); // mix用クロックの再開
 }
 
 #define TUNE_MAX 1024
