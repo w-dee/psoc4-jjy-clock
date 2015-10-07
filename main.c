@@ -53,7 +53,7 @@
 #include <project.h>
 #include <string.h>
 
-#define CALIBRATION
+//#define CALIBRATION
 //#define SAMPLING
 //#define JJYSIM
 
@@ -856,8 +856,10 @@ int main()
 	AMux_CapSw_Start();
 	
     Opamp_1_Start();
+	if(CYDEV_VDDA_MV > 4000) Opamp_1_PumpControl(Opamp_1_PUMP_OFF);
 
     Opamp_2_Start();
+	if(CYDEV_VDDA_MV > 4000) Opamp_2_PumpControl(Opamp_2_PUMP_OFF);
 
     Clock_ADC_Start();
 
